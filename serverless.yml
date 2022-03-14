@@ -1,0 +1,15 @@
+service: hugo-cms
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: eu-central-1
+
+functions:
+  main:
+    handler: handler.upload_post
+    events:
+      - httpApi:
+          path: /upload
+          method: post
