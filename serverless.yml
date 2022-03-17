@@ -13,3 +13,6 @@ functions:
       - httpApi:
           path: /upload
           method: post
+
+plugins:
+  - serverless-python-requirements
