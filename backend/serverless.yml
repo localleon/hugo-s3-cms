@@ -8,11 +8,17 @@ provider:
 
 functions:
   main:
-    handler: handler.upload_post
+    handler: handler.main_handler
     events:
       - httpApi:
           path: /upload
           method: post
+      - httpApi:
+          path: /list
+          method: get
+      - httpApi:
+          path: /delete
+          method: DELETE
 
 plugins:
   - serverless-python-requirements
