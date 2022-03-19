@@ -1,7 +1,12 @@
 # hugo-s3-cms 
 
-## AWS Infrastructure 
+## Local Testing / Invoking 
 
+```
+serverless invoke local -f main -e BUCKET_NAME=hugo-cms-store1 --path sample_events/get.json
+```
+
+## AWS Infrastructure 
 
 The following access points are reachable over the public internet: 
 - hugo-cms-dev =  https://85tpt5asaa.execute-api.eu-central-1.amazonaws.com/
