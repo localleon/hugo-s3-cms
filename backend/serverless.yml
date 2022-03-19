@@ -19,6 +19,9 @@ functions:
       - httpApi:
           path: /delete
           method: DELETE
+      - httpApi:
+          path: /get
+          method: GET
 
 plugins:
   - serverless-python-requirements
