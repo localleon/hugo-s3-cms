@@ -1,15 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="utf-8" />
+    <title>hugo-s3-cms</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <h1>hugo-s3-cms</h1>
 
+
+    <div class="meta">
+        <h2>Write Post</h2>
+        <form id="metadata">
+            <label for="ftitle">Titel:</label><br>
+            <input type="text" id="ftitle" name="title"><br>
+            <label for="fdate">Datum:</label><br>
+            <input type="text" id="fdate" name="date"><br>
+            <label for="fauthor">Author:</label><br>
+            <input type="text" id="fauthor" name="author"><br>
+        </form>
+    </div>
+
+    <div class="writing">
+        <div id="wleft">
+            <h2>Post-Text schreiben</h2>
+            <form id="content">
+                <label for="ftext">Text:</label><br>
+                <textarea id="ftext" cols="40" rows="5"></textarea>
+            </form>
+            <button id="bpreview" onclick="preview()">Preview</button>
+            <button id="bsubmit" onclick="submitPost()">Submit</button>
+        </div>
+    </div>
+    <div id="wright">
+        <h2>Markdown Preview</h2>
+        <div id="preview"></div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="scripts/main.js"></script>
 </body>
 
 </html>
