@@ -3,7 +3,7 @@ name: Publish to s3-site
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
