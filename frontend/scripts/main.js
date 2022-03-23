@@ -53,6 +53,7 @@ function submitPost() {
 }
 
 function clearPostFields() {
+    document.getElementById('preview').innerHTML = null
     document.getElementById('ftitle').value = ""
     document.getElementById('fdate').value = ""
     document.getElementById('fauthor').value = ""
@@ -103,12 +104,14 @@ function constructObject(key) {
 }
 
 function listObjects() {
+    // Reset preview of objects
+    document.getElementById('getPreview').innerHTML = null
+    // Request objects from api 
     getObjects().then(objects => {
         keys = objects['Contents']
-        // Create a table from array and insert it into the document
+        // Create a div from array and insert each object into the document
         list = document.getElementById('objectList')
         list.innerHTML = null
-
         for (var i = 0; i < keys.length; i++) {
             obj = constructObject(keys[i])
             list.appendChild(obj)
