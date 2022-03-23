@@ -19,10 +19,10 @@ functions:
           path: /list
           method: get
       - httpApi:
-          path: /delete
+          path: /delete/{key}
           method: DELETE
       - httpApi:
-          path: /get
+          path: /get/{key}
           method: GET
 
 plugins:

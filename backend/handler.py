@@ -1,8 +1,7 @@
+import base64
 import json
 import io
 import re
-from subprocess import call
-from warnings import catch_warnings
 import boto3
 import datetime
 
@@ -13,7 +12,6 @@ s3 = boto3.client("s3")
 
 def main_handler(event, context):
     print(event)
-
     req_path = event["rawPath"]
 
     # Routing inside the lambda function, we don't need multiple lambda functions for our api
@@ -21,9 +19,9 @@ def main_handler(event, context):
         return handler_upload_post(event)
     elif req_path == "/list":
         return handler_list_directory()
-    elif req_path == "/get":
+    elif req_path.startswith("/get/"):
         return handler_get_file(event)
-    elif req_path == "/delete":
+    elif req_path.startswith("/delete/"):
         return handler_delete_file(event)
 
     # TODO: Remove in production, only for testin
@@ -44,44 +42,39 @@ def handler_catch_all(event):
 
 def handler_get_file(event):
     """This handler returns the object for the given key"""
-    print("Get File called. Not implemented")
+    try:
+        key = event["pathParameters"]["key"]
 
+        # Get object with key as b64 encoded string and return it
+        resp = get_file_from_s3(key)
+        if resp[0] == 202:
+            return callback(202, {"body": resp[1]})
+        else:
+            return callback(404, None)
 
-def delete_file_from_s3(key):
-    """Delete a file from key in our s3 object and form a correct http response"""
-
-    # Check if the file really exists before deleting it
-    if key not in list_objects_from_bucket():
-        return (404, "Key was not found in bucket")
-
-    # trigger the s3 file operation
-    s3_resp = s3.delete_object(Bucket=bucket_name, Key=key)
-    http_status_code = s3_resp["ResponseMetadata"]["HTTPStatusCode"]
-
-    # at successfull operations we return normally, else we provide the user with the s3 statuscode and response metadata for debugging
-    if http_status_code == 204:
-        return (202, f"Successfully delete object with key {key}")
-    else:
-        return (http_status_code, s3_resp["ResponseMetadata"])
+    except KeyError as e:
+        return callback(
+            401,
+            {
+                "msg": "Malformed Request. You didn't specify which object should be deleted with a key. Did you provide a valid ressource"
+            },
+        )
 
 
 def handler_delete_file(event):
     """This handler deletes a specific object at the given key"""
-
-    # Call the delete s3 function if we got a valid request
-    body = get_body_from_event(event)
-
-    if body != None:
-        if "key" in body.keys():
-            s3_resp = delete_file_from_s3(body["key"])
-            return callback(s3_resp[0], s3_resp[1])
-
-    return callback(
-        401,
-        {
-            "msg": "Malformed Request. You didn't specify which object should be deleted with a key. Did you provide valid json?"
-        },
-    )
+    try:
+        key = event["pathParameters"]["key"]
+        # Call the delete s3 function if we got a valid request
+        s3_resp = delete_file_from_s3(key)
+        return callback(s3_resp[0], s3_resp[1])
+    except KeyError as e:
+        return callback(
+            401,
+            {
+                "msg": "Malformed Request. You didn't specify which object should be deleted with a key. Did you provide valid json?"
+            },
+        )
 
 
 def handler_list_directory():
@@ -106,6 +99,43 @@ def handler_upload_post(event):
     write_to_s3(file=post_file, filename=get_filename_from_post(body["title"]))
 
     return callback(200, {"msg": "Post was created successfully"})
+
+
+def get_file_from_s3(key):
+    """Get a file from key in our s3 object"""
+
+    # Check if the file really exists before deleting it
+    if key not in list_objects_from_bucket():
+        return (404, "Key was not found in bucket")
+
+    # trigger the s3 file operation
+    buf = io.BytesIO()
+    s3.download_fileobj(Bucket=bucket_name, Key=key, Fileobj=buf)
+    buf.seek(0)
+
+    # return the file as a base64 encoded string
+    return (
+        202,
+        base64.b64encode(buf.read()).decode(),
+    )
+
+
+def delete_file_from_s3(key):
+    """Delete a file from key in our s3 object and form a correct http response"""
+
+    # Check if the file really exists before deleting it
+    if key not in list_objects_from_bucket():
+        return (404, "Key was not found in bucket")
+
+    # trigger the s3 file operation
+    s3_resp = s3.delete_object(Bucket=bucket_name, Key=key)
+    http_status_code = s3_resp["ResponseMetadata"]["HTTPStatusCode"]
+
+    # at successfull operations we return normally, else we provide the user with the s3 statuscode and response metadata for debugging
+    if http_status_code == 204:
+        return (202, f"Successfully delete object with key {key}")
+    else:
+        return (http_status_code, s3_resp["ResponseMetadata"])
 
 
 def list_objects_from_bucket():
