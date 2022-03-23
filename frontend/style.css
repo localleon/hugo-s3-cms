@@ -1,7 +1,5 @@
 /* Texts and general stuff */
-
-
-body {
+.container {
     padding: 3em;
 }
 
@@ -33,9 +31,9 @@ h1 {
     border: 0.1em lightslategrey solid;
 }
 
-#content {
-    min-height: 10em;
-    min-width: 30em;
+#mdUserText {
+    height: 10em;
+    width: 30em;
 }
 
 .preview {
@@ -48,8 +46,27 @@ h1 {
     border: 0.2rem solid #9b4dca
 }
 
-
 /* Delete Section */
 #deleteKey {
     max-width: 12em;
+}
+
+/* List Posts Objects */
+.singleObject {
+    text-align: right;
+    max-width: 12em;
+}
+
+.icon {
+    border: 0.1rem solid #9b4dca;
+    width: 1.5em;
+    padding: 0.5rem;
+}
+
+.icon:hover {
+    background-color: #9b4dca;
+}
+
+#getPreview {
+    border: solid black 1px;
 }

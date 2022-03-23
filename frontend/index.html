@@ -18,11 +18,9 @@
 </head>
 
 <body>
-
-    <div class="func-section">
-        <h2>Write-Post</h2>
-        <!-- Post Upload START-->
-        <div class="container metadata">
+    <div class="container">
+        <div class="func-section">
+            <h2>Write-Post</h2>
             <p class="description">
                 Mithilfe diese Formulares lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
                 ausgefüllt sein.
@@ -32,8 +30,9 @@
                 am gleichen Tag. Innerhalb des Textfeldes kann mit <a
                     href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden
             </p>
+
             <!-- Formular for metadata upload-->
-            <div class="row">
+            <div class="row metadata">
                 <div class="column">
                     <label for="ftitle">Titel:</label>
                     <input type="text" id="ftitle" name="title">
@@ -47,14 +46,12 @@
                     <input type="text" id="fauthor" name="author">
                 </div>
             </div>
-        </div>
 
-        <div id="container writing">
             <!-- Form for markdown writing and preview-->
-            <div class="row">
-                <div id="column">
+            <div class="row" id="writing">
+                <div class="column">
                     <label>Post-Text schreiben:</label>
-                    <textarea id="content" oninput="isTyping()" id="ftext" cols="40" rows="5"></textarea>
+                    <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
                     <button id="bsubmit" onclick="submitPost()">Submit</button>
                 </div>
                 <div class="column">
@@ -62,48 +59,45 @@
                     <div class="preview" id="preview"></div>
                 </div>
             </div>
-
+            <!-- Post Upload END-->
         </div>
-        <!-- Post Upload END-->
-    </div>
 
-    <div class="func-section">
-        <h2>Get/List Posts</h2>
-        <p class="description">
-            Hier kannst du dir alle Markdown-Dateien anzeigen lassen, die in den S3-Bucket hochgeladen wurden. Dir
-            werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
-        </p>
-        <button id="listObjects" onclick="listObjects()">List Objects</button>
-        <div class="container">
-            <div class="row">
-                <div id="objectTableContainer" class="column">
-                </div>
-                <div class="column">
-                    <div class="preview" id="previewGet"></div>
+        <div class="func-section">
+            <h2>Manage Posts</h2>
+            <p class="description">
+                Hier kannst du dir alle Markdown-Dateien anzeigen lassen, die in den S3-Bucket hochgeladen wurden. Dir
+                werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
+            </p>
+            <!-- JS generated objects to display which objects currently are stored-->
+            <div id="objectList" class="row">
+                <div class="row singleObject">
+                    <div class="column">
+                        <p>Text</p>
+                    </div>
+                    <div class="column">
+                        <img onclick="displayPost('2022-03-19_test_blog.md')" src="images/icons/download.png"
+                            alt="Download" class="icon">
+                        <img onclick="deletePostPrompt('2022-03-19__blogpost.md')" src="images/icons/delete.png"
+                            alt="Download" class="icon">
+                    </div>
                 </div>
             </div>
+            <button class="button-outline" id="listObjects" onclick="listObjects()">Refresh Objects</button>
+        </div>
+
+
+
+
+        <div class="row">
+            <div id="getPreview"></div>
         </div>
     </div>
 
-    <div class="func-section">
-        <h2>Delete Post</h2>
-
-        <p class="description">
-            Hier kannst du einen Objekt-Key eingeben um den entsprechenden Post unwiederruflich zu löschen.
-        </p>
-        <label>Post-Key:</label>
-        <input type="text" id="deleteKey">
-        <button>Delete</button>
-
-    </div>
 
 
+    <!-- Main JS File and external Scripts for markdown preview -->
     <script src="scripts/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-
-
-    <!-- You should properly set the path from the main file. -->
 </body>
 
 </html>
