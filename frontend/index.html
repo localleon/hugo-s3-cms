@@ -4,44 +4,106 @@
 <head>
     <meta charset="utf-8" />
     <title>hugo-s3-cms</title>
+
+
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <!-- CSS Reset -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+    <!-- Milligram CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+    <!-- Own Stylesheet-->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <h1>hugo-s3-cms</h1>
 
+    <div class="func-section">
+        <h2>Write-Post</h2>
+        <!-- Post Upload START-->
+        <div class="container metadata">
+            <p class="description">
+                Mithilfe diese Formulares lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
+                ausgefüllt sein.
+                Über den Submit-Button werden die Posts hochgeladen.
+                Ein Post kann geändert werden indem ein Post mit dem gleichen Namen erstellt wird. Dies funktioniert
+                jedoch nur
+                am gleichen Tag. Innerhalb des Textfeldes kann mit <a
+                    href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden
+            </p>
+            <!-- Formular for metadata upload-->
+            <div class="row">
+                <div class="column">
+                    <label for="ftitle">Titel:</label>
+                    <input type="text" id="ftitle" name="title">
+                </div>
+                <div class="column">
+                    <label for="fdate">Datum:</label>
+                    <input type="text" id="fdate" name="date">
+                </div>
+                <div class="column">
+                    <label for="fauthor">Author:</label>
+                    <input type="text" id="fauthor" name="author">
+                </div>
+            </div>
+        </div>
 
-    <div class="meta">
-        <h2>Write Post</h2>
-        <form id="metadata">
-            <label for="ftitle">Titel:</label><br>
-            <input type="text" id="ftitle" name="title"><br>
-            <label for="fdate">Datum:</label><br>
-            <input type="text" id="fdate" name="date"><br>
-            <label for="fauthor">Author:</label><br>
-            <input type="text" id="fauthor" name="author"><br>
-        </form>
+        <div id="container writing">
+            <!-- Form for markdown writing and preview-->
+            <div class="row">
+                <div id="column">
+                    <label>Post-Text schreiben:</label>
+                    <textarea id="content" oninput="isTyping()" id="ftext" cols="40" rows="5"></textarea>
+                    <button id="bsubmit" onclick="submitPost()">Submit</button>
+                </div>
+                <div class="column">
+                    <label>Markdown-Preview</label>
+                    <div class="preview" id="preview"></div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Post Upload END-->
     </div>
 
-    <div class="writing">
-        <div id="wleft">
-            <h2>Post-Text schreiben</h2>
-            <form id="content">
-                <label for="ftext">Text:</label><br>
-                <textarea id="ftext" cols="40" rows="5"></textarea>
-            </form>
-            <button id="bpreview" onclick="preview()">Preview</button>
-            <button id="bsubmit" onclick="submitPost()">Submit</button>
+    <div class="func-section">
+        <h2>Get/List Posts</h2>
+        <p class="description">
+            Hier kannst du dir alle Markdown-Dateien anzeigen lassen, die in den S3-Bucket hochgeladen wurden. Dir
+            werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
+        </p>
+        <button id="listObjects" onclick="listObjects()">List Objects</button>
+        <div class="container">
+            <div class="row">
+                <div id="objectTableContainer" class="column">
+                </div>
+                <div class="column">
+                    <div class="preview" id="previewGet"></div>
+                </div>
+            </div>
         </div>
     </div>
-    <div id="wright">
-        <h2>Markdown Preview</h2>
-        <div id="preview"></div>
-    </div>
+
+    <div class="func-section">
+        <h2>Delete Post</h2>
+
+        <p class="description">
+            Hier kannst du einen Objekt-Key eingeben um den entsprechenden Post unwiederruflich zu löschen.
+        </p>
+        <label>Post-Key:</label>
+        <input type="text" id="deleteKey">
+        <button>Delete</button>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <script src="scripts/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+
+
+    <!-- You should properly set the path from the main file. -->
 </body>
 
 </html>

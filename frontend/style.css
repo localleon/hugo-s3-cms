@@ -1,11 +1,55 @@
-/* Text Formular */
-#ftext {
-    width: 80%;
-    height: 10em;
+/* Texts and general stuff */
+
+
+body {
+    padding: 3em;
+}
+
+h1 {
+    text-align: center;
+}
+
+.func-section {
+    margin-bottom: 3em;
+}
+
+.description {
+    text-align: left;
+    padding: 1em 0em;
+}
+
+/* Metadata formular */
+.metadata {
+    margin-bottom: 2em;
+}
+
+.metadata input {
+    max-width: 12em;
 }
 
 
-#preview {
-    border: 0.1em black solid;
-    padding: 1em;
+/* Text Formular */
+#ftext {
+    border: 0.1em lightslategrey solid;
+}
+
+#content {
+    min-height: 10em;
+    min-width: 30em;
+}
+
+.preview {
+    min-height: 10em;
+    padding: 0.2em;
+    border: 0.1em lightslategrey solid;
+}
+
+#preview:hover {
+    border: 0.2rem solid #9b4dca
+}
+
+
+/* Delete Section */
+#deleteKey {
+    max-width: 12em;
 }

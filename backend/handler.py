@@ -100,6 +100,7 @@ def handler_upload_post(event):
             400, {"msg": "Malformed Request. Not all required json-keys where provided"}
         )
 
+    # TODO: Check if all fields are filled with content, else reject
     # Create an in-memory file and write to aws s3
     post_file = create_post_file(params=body)
     write_to_s3(file=post_file, filename=get_filename_from_post(body["title"]))
