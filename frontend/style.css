@@ -46,20 +46,14 @@ h1 {
     border: 0.2rem solid #9b4dca
 }
 
-/* Delete Section */
-#deleteKey {
-    max-width: 12em;
-}
-
 /* List Posts Objects */
 .singleObject {
-    text-align: right;
-    max-width: 12em;
+    text-align: left;
 }
 
 .icon {
     border: 0.1rem solid #9b4dca;
-    width: 1.5em;
+    width: 2em;
     padding: 0.5rem;
 }
 

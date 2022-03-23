@@ -2,7 +2,7 @@
 const apiUrl = "https://85tpt5asaa.execute-api.eu-central-1.amazonaws.com/"
 var delay = 1000; // that's 1 seconds of not typing
 var timer = null;
-// init()
+init()
 
 function init() {
     console.log("Initalized Web-Application")
@@ -78,7 +78,7 @@ function constructObject(key) {
 
     // Get Button
     imgG = document.createElement("img")
-    imgG.src = "images/icons/download.png"
+    imgG.src = "images/icons/view.png"
     imgG.alt = "Download"
     imgG.setAttribute("class", "icon")
 
