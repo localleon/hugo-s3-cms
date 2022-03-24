@@ -14,7 +14,7 @@ function init() {
 function isTyping() {
     // Automatic Markdown-Preview when the user is tpying 
     clearTimeout(timer);
-    var value = document.getElementById('mdUserText').value;
+    let value = document.getElementById('mdUserText').value;
     if (value) {
         preview()
         timer = setTimeout(null, delay);
@@ -22,9 +22,11 @@ function isTyping() {
 }
 
 function preview() {
-    // TODO: Sanitize HTML here -> else XSS möglich
-    ftext = document.getElementById('mdUserText').value
-    document.getElementById('preview').innerHTML = marked.parse(ftext);
+    let text = document.getElementById('mdUserText').value
+    // Sanitize the HTML from the server here to prevent XSS 
+    let clean = DOMPurify.sanitize(text);
+    // Preview in box
+    document.getElementById('preview').innerHTML = marked.parse(clean);
 }
 
 
@@ -63,22 +65,22 @@ function clearPostFields() {
 
 function constructObject(key) {
     // Creating wrapper object for file object 
-    div = document.createElement("div")
+    let div = document.createElement("div")
     div.setAttribute("class", "row singleObject")
 
     // Description part 
-    divC1 = document.createElement("div")
+    let divC1 = document.createElement("div")
     divC1.setAttribute("class", "column")
     p = document.createElement("p")
     p.innerHTML = key
     divC1.appendChild(p)
 
     // Inner Elements get and delete
-    divC2 = document.createElement("div")
+    let divC2 = document.createElement("div")
     divC2.setAttribute("class", "column")
 
     // Get Button
-    imgG = document.createElement("img")
+    let imgG = document.createElement("img")
     imgG.src = "images/icons/view.png"
     imgG.alt = "Download"
     imgG.setAttribute("class", "icon")
@@ -86,7 +88,7 @@ function constructObject(key) {
     imgG.setAttribute("onclick", "displayPost('" + key + "')")
 
     // Delete Button
-    imgD = document.createElement("img")
+    let imgD = document.createElement("img")
     imgD.src = "images/icons/delete.png"
     imgD.alt = "Delete"
     imgD.setAttribute("class", "icon")
@@ -131,7 +133,7 @@ function displayPost(key) {
 
 function deletePostPrompt(key) {
     // Confirm if the user really wants to delete the item
-    var dialog = confirm("Do you want to delete " + key + "?");
+    let dialog = confirm("Do you want to delete " + key + "?");
     if (dialog) {
         deletePost(key)
         console.log('Post' + key + ' deleted')
@@ -148,7 +150,7 @@ function deletePostPrompt(key) {
 // HTTP-API Functions
 
 async function getObject(key) {
-    url = apiUrl + "get/" + key
+    let url = apiUrl + "get/" + key
 
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
@@ -166,7 +168,7 @@ async function getObject(key) {
 }
 
 async function getObjects() {
-    url = apiUrl + "list"
+    let url = apiUrl + "list"
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
         mode: 'cors',
@@ -183,7 +185,7 @@ async function getObjects() {
 }
 
 async function deletePost(key) {
-    url = apiUrl + "delete/" + key
+    let url = apiUrl + "delete/" + key
     const response = await fetch(url, {
         method: 'DELETE', // *GET, POST, PUT, DELETE
         mode: 'cors',
