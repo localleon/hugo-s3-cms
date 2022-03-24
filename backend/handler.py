@@ -1,9 +1,10 @@
 import base64
 import json
 import io
-import re
 import boto3
+import re
 import datetime
+from html_sanitizer import Sanitizer
 
 # Config Option -> migrate to env variables
 bucket_name = "hugo-cms-store1"
@@ -87,18 +88,24 @@ def handler_upload_post(event):
     """Upload_post handles the uploading process of the api"""
     body = get_body_from_event(event)
 
-    # Check if request is valid
-    if not validate_upload_json(body):
+    # Check if request is valid and all fields are filled with content
+    if not validate_post_json(body):
         return callback(
-            400, {"msg": "Malformed Request. Not all required json-keys where provided"}
+            400,
+            {
+                "msg": "Malformed Request. Not all required json-keys where provided or some fields where left empty"
+            },
         )
 
-    # TODO: Check if all fields are filled with content, else reject
     # Create an in-memory file and write to aws s3
-    post_file = create_post_file(params=body)
-    write_to_s3(file=post_file, filename=get_filename_from_post(body["title"]))
-
-    return callback(200, {"msg": "Post was created successfully"})
+    filename = get_filename_from_post(body["title"])
+    if filename:
+        post_file = create_post_file(params=body)
+        write_to_s3(file=post_file, filename=filename)
+        # TODO: S3 error checking here?
+        return callback(200, {"msg": "Post was created successfully"})
+    else:
+        return callback(400, {"msg": "Title contains illegal characters"})
 
 
 def get_file_from_s3(key):
@@ -148,9 +155,16 @@ def get_body_from_event(event):
 
 
 def get_filename_from_post(title):
-    """Converts the titel to a filename (cut length at 20) and adds a timestamp"""
-    short_title = title.replace(" ", "_")[:20]
-    return f"{datetime.date.today().isoformat()}_{short_title}.md"
+    """Converts the titel to a filename (cut length at 20),checks if we have safe characters in the path and adds a timestamp"""
+    short_title = title.strip().replace(" ", "_")[:20]
+    safe_chars = re.compile(
+        r"[a-zA-Z0-9.]*$"
+    )  # only alphabetic letters and numbers are allowed
+
+    if safe_chars.match(short_title):
+        return f"{datetime.date.today().isoformat()}_{short_title}.md"
+    else:
+        return None
 
 
 def write_to_s3(file, filename, path=None):
@@ -163,8 +177,12 @@ def write_to_s3(file, filename, path=None):
 
 def create_post_file(params):
     """Create_post_file builds a virtual file in memory and returns it"""
-    metadata = f"---\ntitle: {params['title']}\ndate: {params['date']}\nauthor: {params['author']}\ndraft: false\n"
-    content = f"---\n{params['content']}\n---\n"
+    # sanitize the post json for malicious/wrong input
+    c_params = sanitize_post_params(params)
+
+    # construct strings for the file
+    metadata = f"---\ntitle: {c_params['title']}\ndate: {c_params['date']}\nauthor: {c_params['author']}\ndraft: false\n"
+    content = f"---\n{c_params['content']}\n---\n"
 
     # we create a file in memory, content of markdown needs to be encoded into bytes
     md_file = io.BytesIO()
@@ -174,10 +192,21 @@ def create_post_file(params):
     return md_file
 
 
-def validate_upload_json(params):
+def sanitize_post_params(params):
+    """Sanitize the post parameters for malicious html"""
+    return {k: Sanitizer().sanitize(v) for k, v in params.items()}
+
+
+def validate_post_json(params):
     """Tkes the body of the requests and checks if every valid parameter for an upload is filled in"""
     required_keys = ("title", "date", "author", "content")
-    return all(keys in params for keys in required_keys)
+
+    # Check if all keys where provided
+    provided_keys = [keys in params for keys in required_keys]
+    # Check if the metadata and the post content have a valid length
+    param_lens = [len(x) > 1 for x in params.values()]
+
+    return all(provided_keys) and all(param_lens)
 
 
 def callback(status_code, body):
