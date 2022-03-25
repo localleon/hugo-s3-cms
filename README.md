@@ -13,6 +13,12 @@ hugo-s3-cms is a simple CMS for uploading markdown files into an Object Storage.
 - Erweiterungsmöglichkeiten
   - WYSIWYG Editor einfügen
 
+
+## Herausforderungen
+- XSS 
+- Paging 
+- Layout Grid von Ordnern
+
 ## AWS Infrastructure 
 
 The following access points are reachable over the public internet: 

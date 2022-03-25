@@ -5,6 +5,7 @@ import boto3
 import re
 import datetime
 from html_sanitizer import Sanitizer
+import itertools
 
 # Config Option -> migrate to env variables
 bucket_name = "hugo-cms-store1"
@@ -19,26 +20,11 @@ def main_handler(event, context):
     if req_path == "/upload":
         return handler_upload_post(event)
     elif req_path == "/list":
-        return handler_list_directory()
+        return handler_list_directory(event)
     elif req_path.startswith("/get/"):
         return handler_get_file(event)
     elif req_path.startswith("/delete/"):
         return handler_delete_file(event)
-
-    # TODO: Remove in production, only for testin
-
-    return handler_catch_all()
-
-
-def handler_catch_all(event):
-    """This Handler shouldn't be called normally. AWS Gateway is handling 404 and invalid paths, but this can catch some edge cases"""
-    return {
-        "statusCode": 503,
-        "body": {
-            "error": "Error while trying to parse the path. Internal Server Error in Request Routing",
-            "event": event,
-        },
-    }
 
 
 def handler_get_file(event):
@@ -78,10 +64,16 @@ def handler_delete_file(event):
         )
 
 
-def handler_list_directory():
+def handler_list_directory(event):
     """This handler returns the keys for all objects in the bucket"""
-    objects = list_objects_from_bucket()
-    return callback(202, {"Contents": objects})
+    try:
+        # look if the user requested a page, if not set default page to 1
+        page = int(event["queryStringParameters"]["page"], 10)
+    except Exception as e:
+        page = 1
+
+    objects = list_objects_from_bucket(page)
+    return callback(202, {"Contents": objects, "page": page})
 
 
 def handler_upload_post(event):
@@ -102,7 +94,6 @@ def handler_upload_post(event):
     if filename:
         post_file = create_post_file(params=body)
         write_to_s3(file=post_file, filename=filename)
-        # TODO: S3 error checking here?
         return callback(200, {"msg": "Post was created successfully"})
     else:
         return callback(400, {"msg": "Title contains illegal characters"})
@@ -145,9 +136,20 @@ def delete_file_from_s3(key):
         return (http_status_code, s3_resp["ResponseMetadata"])
 
 
-def list_objects_from_bucket():
+def list_objects_from_bucket(pageNum):
+    # boto3 collections handle pagination for us, we just need to specify the correct page and pagesize
     s3_resp = s3.list_objects_v2(Bucket=bucket_name, Delimiter="/")
-    return [obj["Key"] for obj in s3_resp["Contents"]]
+    keys = [obj["Key"] for obj in s3_resp["Contents"]]
+
+    pageIndex = calcPagingIndex(pageNum)
+    print(f"Returning paged results for {pageIndex} till {pageIndex + 9}")
+    return keys[pageIndex : pageIndex + 9]
+
+
+def calcPagingIndex(pageNum):
+    """Calculate the correct indexes for the paging size"""
+    pageSize = 8
+    return 0 if pageNum == 1 else (pageNum - 1) * pageSize
 
 
 def get_body_from_event(event):
