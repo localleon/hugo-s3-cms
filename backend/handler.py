@@ -72,7 +72,7 @@ def handler_list_directory(event):
     except Exception as e:
         page = 1
 
-    objects = list_objects_from_bucket(page)
+    objects = list_objects_from_bucket_paged(page)
     return callback(202, {"Contents": objects, "page": page})
 
 
@@ -136,20 +136,29 @@ def delete_file_from_s3(key):
         return (http_status_code, s3_resp["ResponseMetadata"])
 
 
-def list_objects_from_bucket(pageNum):
-    # boto3 collections handle pagination for us, we just need to specify the correct page and pagesize
+def list_objects_from_bucket():
+    """Provides all object keys from the configured bucket"""
     s3_resp = s3.list_objects_v2(Bucket=bucket_name, Delimiter="/")
     keys = [obj["Key"] for obj in s3_resp["Contents"]]
+    return keys
 
+
+def list_objects_from_bucket_paged(pageNum):
+    """Provides an paginated interface for the http-api to get objects keys from the bucket"""
+    keys = list_objects_from_bucket()
+
+    # we fake pagination on our api here. The real aws backend is not paginated -> can be implemented using boto3 collections but is complicated
     pageIndex = calcPagingIndex(pageNum)
-    print(f"Returning paged results for {pageIndex} till {pageIndex + 9}")
-    return keys[pageIndex : pageIndex + 9]
+    print(f"Returning paged results for {pageIndex[0]} till {pageIndex[1]}")
+    return keys[pageIndex[0] : pageIndex[1]]
 
 
 def calcPagingIndex(pageNum):
     """Calculate the correct indexes for the paging size"""
     pageSize = 8
-    return 0 if pageNum == 1 else (pageNum - 1) * pageSize
+    pageStart = 0 if pageNum == 1 else (pageNum - 1) * pageSize
+
+    return (pageStart, pageStart + pageSize)
 
 
 def get_body_from_event(event):
