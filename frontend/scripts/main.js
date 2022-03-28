@@ -2,20 +2,19 @@
 const apiUrl = "https://85tpt5asaa.execute-api.eu-central-1.amazonaws.com/"
 var delay = 1000; // that's 1 seconds of not typing
 var timer = null;
-let auth0 = null;
-
-
+var auth0 = null;
+var token = null;
+var refreshDelay = 4000;
 
 // initalize the application
 window.onload = async () => {
     await configureClient();
-    updateUI();
-
     const isAuthenticated = await auth0.isAuthenticated();
 
     if (isAuthenticated) {
         // show the gated content
-        updateUI()
+        token = await auth0.getTokenSilently();
+        updateUI();
         return;
     }
 
@@ -25,6 +24,7 @@ window.onload = async () => {
 
         // Process the login state
         await auth0.handleRedirectCallback();
+        token = await auth0.getTokenSilently();
 
         updateUI();
 
@@ -69,11 +69,10 @@ const updateUI = async () => {
 
     if (isAuthenticated) {
         document.getElementById("spa").style.visibility = "visible";
+        listObjects()
     } else {
         document.getElementById("spa").style.visibility = "hidden";
-
     }
-
 };
 
 // Markdown Preview Stuff 
@@ -96,12 +95,8 @@ function preview() {
     document.getElementById('preview').innerHTML = marked.parse(clean);
 }
 
-
 // Interaction with the HTTP Api 
 function submitPost() {
-    console.log("Submitting post!")
-    //TODO: Check if fields are filled
-
     // Construct json object from form 
     let post = {
         "title": document.getElementById('ftitle').value,
@@ -109,20 +104,25 @@ function submitPost() {
         "author": document.getElementById('fauthor').value,
         "content": document.getElementById('mdUserText').value
     }
+
     let url = apiUrl + "upload"
     // Upload post via Rest-Api 
     postData(url, post).then(data => {
-        swal({
-            title: "Good job!",
+        Swal.fire({
+            title: 'Post erstellt.',
             text: data['msg'],
             icon: "success",
+        })
+        // Refresh view
+        clearPostFields();
+        setTimeout(listObjects(), refreshDelay);
+    }).catch((error) => {
+        Swal.fire({
+            title: 'Post erstellt.',
+            text: "Ein Error ist mit der API aufgetreten." + error,
+            icon: "error",
         });
     });
-
-
-    // Refresh view
-    clearPostFields()
-    setTimeout(listObjects(), 2000)
 }
 
 function clearPostFields() {
@@ -153,7 +153,7 @@ function constructObject(key) {
     // Description part 
     let divC1 = document.createElement("div")
     divC1.setAttribute("class", "column")
-    p = document.createElement("p")
+    let p = document.createElement("p")
     p.innerHTML = key
     divC1.appendChild(p)
 
@@ -193,63 +193,60 @@ function getPageCounter() {
 
 function listObjects() {
     // Reset preview of objects
-    document.getElementById('getPreview').innerHTML = null
+    document.getElementById('getPreview').innerHTML = null;
 
     // Get Objects keys from api
     getObjects(getPageCounter()).then(objects => {
-        keys = objects['Contents']
-        list = document.getElementById('objectList')
-        list.innerHTML = null
+        let keys = objects['Contents'];
+        let list = document.getElementById('objectList');
+        list.innerHTML = null;
 
         // Construct HTML Objects to display object keys
         for (var i = 0; i < keys.length; i += 2) {
-
-            c1 = constructObject(keys[i])
-            c2 = constructObject(keys[i + 1])
-            row = constructObjectRow(c1, c2)
-            list.appendChild(row)
+            let row = constructObjectRow(constructObject(keys[i]), constructObject(keys[i + 1]));
+            list.appendChild(row);
         }
     })
 }
 
 
 function displayPost(key) {
-    console.log("Displaying post " + key)
     getObject(key).then(resp => {
         // The .md files on the server are in Hugo-Format. We need to extract only the markdown content from the files
-        postParts = atob(resp['body']).split('---')
+        let postParts = atob(resp['body']).split('---');
         document.getElementById('getPreview').innerHTML = marked.parse(postParts[2]);
-    })
+    }).then((error) => {
+        swal({
+            icon: "error",
+            text: "Ein Error ist mit der API aufgetreten." + error
+        });
+    });
 }
 
 function deletePostPrompt(key) {
     // Confirm if the user really wants to delete the item
-    swal({
+    Swal.fire({
         title: "Möchtest du das wirklich?",
-        text: "Wenn du diesen Post löschst, kann er nicht wiederhergestellt werden. Bist du dir sicher? ",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-    }).then((willDelete) => {
-        if (willDelete) {
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Löschen!'
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            Swal.fire('Poof! Deine Post wurde gelöscht!', '', 'success')
             deletePost(key)
-            swal("Poof! Deine Datei wurde gelöscht", {
-                icon: "success",
-            });
+            // Refresh view 
+            setTimeout(listObjects(), refreshDelay)
         }
-    });
-    // Refresh view 
-    setTimeout(listObjects(), 1000)
+    })
+
 }
 
 
 // HTTP-API Functions
-
 async function getObject(key) {
-    // Get the access token from the Auth0 client
-    const token = await auth0.getTokenSilently();
-
     let url = apiUrl + "get/" + key
+
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
         mode: 'cors',
@@ -266,10 +263,8 @@ async function getObject(key) {
 }
 
 async function getObjects(pageNum) {
-    // Get the access token from the Auth0 client
-    const token = await auth0.getTokenSilently();
-
     let url = apiUrl + "list"
+
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
         mode: 'cors',
@@ -286,10 +281,8 @@ async function getObjects(pageNum) {
 }
 
 async function deletePost(key) {
-    // Get the access token from the Auth0 client
-    const token = await auth0.getTokenSilently();
-
     let url = apiUrl + "delete/" + key
+
     const response = await fetch(url, {
         method: 'DELETE', // *GET, POST, PUT, DELETE
         mode: 'cors',
@@ -305,12 +298,7 @@ async function deletePost(key) {
     return response.json();
 }
 
-
-// Post to API
 async function postData(url = '', data = {}) {
-    // Get the access token from the Auth0 client
-    const token = await auth0.getTokenSilently();
-
     const response = await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE
         mode: 'cors',
