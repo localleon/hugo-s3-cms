@@ -112,7 +112,11 @@ function submitPost() {
     let url = apiUrl + "upload"
     // Upload post via Rest-Api 
     postData(url, post).then(data => {
-        alert(data['msg'])
+        swal({
+            title: "Good job!",
+            text: data['msg'],
+            icon: "success",
+        });
     });
 
 
@@ -129,6 +133,15 @@ function clearPostFields() {
     document.getElementById('mdUserText').value = ""
 }
 
+
+function constructObjectRow(child1, child2) {
+    // Creating wrapper object for file object 
+    let div = document.createElement("div")
+    div.setAttribute("class", "row")
+    div.appendChild(child1)
+    div.appendChild(child2)
+    return div
+}
 
 function constructObject(key) {
     // constructObjects constructs a html element that displays an markdown post
@@ -174,18 +187,27 @@ function constructObject(key) {
     return div
 }
 
+function getPageCounter() {
+    return 1
+}
+
 function listObjects() {
     // Reset preview of objects
     document.getElementById('getPreview').innerHTML = null
-    // Request objects from api 
-    getObjects().then(objects => {
+
+    // Get Objects keys from api
+    getObjects(getPageCounter()).then(objects => {
         keys = objects['Contents']
-        // Create a div from array and insert each object into the document
         list = document.getElementById('objectList')
         list.innerHTML = null
-        for (var i = 0; i < keys.length; i++) {
-            obj = constructObject(keys[i])
-            list.appendChild(obj)
+
+        // Construct HTML Objects to display object keys
+        for (var i = 0; i < keys.length; i += 2) {
+
+            c1 = constructObject(keys[i])
+            c2 = constructObject(keys[i] + 1)
+            row = constructObjectRow(c1, c2)
+            list.appendChild(row)
         }
     })
 }
@@ -202,17 +224,22 @@ function displayPost(key) {
 
 function deletePostPrompt(key) {
     // Confirm if the user really wants to delete the item
-    let dialog = confirm("Do you want to delete " + key + "?");
-    if (dialog) {
-        deletePost(key)
-        console.log('Post' + key + ' deleted')
-
-        // Refresh view 
-        setTimeout(listObjects(), 1000)
-    }
-    else {
-        console.log('Post' + key + ' was not deleted')
-    }
+    swal({
+        title: "Möchtest du das wirklich?",
+        text: "Wenn du diesen Post löschst, kann er nicht wiederhergestellt werden. Bist du dir sicher? ",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    }).then((willDelete) => {
+        if (willDelete) {
+            deletePost(key)
+            swal("Poof! Deine Datei wurde gelöscht", {
+                icon: "success",
+            });
+        }
+    });
+    // Refresh view 
+    setTimeout(listObjects(), 1000)
 }
 
 
@@ -240,7 +267,7 @@ async function getObject(key) {
     return response.json();
 }
 
-async function getObjects() {
+async function getObjects(pageNum) {
     // Get the access token from the Auth0 client
     const token = await auth0.getTokenSilently();
 

@@ -3,6 +3,10 @@
     padding: 3em;
 }
 
+#spa {
+    visibility: hidden;
+}
+
 h1 {
     text-align: center;
 }
