@@ -2,12 +2,79 @@
 const apiUrl = "https://85tpt5asaa.execute-api.eu-central-1.amazonaws.com/"
 var delay = 1000; // that's 1 seconds of not typing
 var timer = null;
-init()
+let auth0 = null;
 
-function init() {
-    console.log("Initalized Web-Application")
-    listObjects()
-}
+
+
+// initalize the application
+window.onload = async () => {
+    await configureClient();
+    updateUI();
+
+    const isAuthenticated = await auth0.isAuthenticated();
+
+    if (isAuthenticated) {
+        // show the gated content
+        updateUI()
+        return;
+    }
+
+    // check for the code and state parameters
+    const query = window.location.search;
+    if (query.includes("code=") && query.includes("state=")) {
+
+        // Process the login state
+        await auth0.handleRedirectCallback();
+
+        updateUI();
+
+        // Use replaceState to redirect the user away and remove the querystring parameters
+        window.history.replaceState({}, document.title, "/");
+    }
+};
+
+const fetchAuthConfig = () => fetch("/auth_config.json");
+
+const configureClient = async () => {
+    // Get Auth Configuration Parameters from client
+    const response = await fetchAuthConfig();
+    const config = await response.json();
+
+    auth0 = await createAuth0Client({
+        domain: config.domain,
+        client_id: config.clientId,
+        audience: config.audience   // audience value for api access
+    });
+};
+
+const login = async () => {
+    await auth0.loginWithRedirect({
+        redirect_uri: window.location.origin
+    });
+};
+
+const logout = () => {
+    auth0.logout({
+        returnTo: window.location.origin
+    });
+};
+
+const updateUI = async () => {
+    // hide contents of the single-page-application to make the login feel more fluid
+
+    const isAuthenticated = await auth0.isAuthenticated();
+
+    document.getElementById("btn-logout").disabled = !isAuthenticated;
+    document.getElementById("btn-login").disabled = isAuthenticated;
+
+    if (isAuthenticated) {
+        document.getElementById("spa").style.visibility = "visible";
+    } else {
+        document.getElementById("spa").style.visibility = "hidden";
+
+    }
+
+};
 
 // Markdown Preview Stuff 
 
@@ -64,6 +131,8 @@ function clearPostFields() {
 
 
 function constructObject(key) {
+    // constructObjects constructs a html element that displays an markdown post
+
     // Creating wrapper object for file object 
     let div = document.createElement("div")
     div.setAttribute("class", "row singleObject")
@@ -150,16 +219,20 @@ function deletePostPrompt(key) {
 // HTTP-API Functions
 
 async function getObject(key) {
-    let url = apiUrl + "get/" + key
+    // Get the access token from the Auth0 client
+    const token = await auth0.getTokenSilently();
 
+    let url = apiUrl + "get?" + new URLSearchParams({
+        key: key
+    })
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
         mode: 'cors',
         cache: 'no-cache',
         credentials: 'omit',
         headers: {
-            'Content-Type': 'application/json'
-            // TODO: Inject authorization headers here 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer'
@@ -168,6 +241,9 @@ async function getObject(key) {
 }
 
 async function getObjects() {
+    // Get the access token from the Auth0 client
+    const token = await auth0.getTokenSilently();
+
     let url = apiUrl + "list"
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
@@ -175,8 +251,8 @@ async function getObjects() {
         cache: 'no-cache',
         credentials: 'omit',
         headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-            // TODO: Inject authorization headers here 
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
@@ -185,15 +261,20 @@ async function getObjects() {
 }
 
 async function deletePost(key) {
-    let url = apiUrl + "delete/" + key
+    // Get the access token from the Auth0 client
+    const token = await auth0.getTokenSilently();
+
+    let url = apiUrl + "delete?" + new URLSearchParams({
+        key: key
+    })
     const response = await fetch(url, {
         method: 'DELETE', // *GET, POST, PUT, DELETE
         mode: 'cors',
         cache: 'no-cache',
         credentials: 'omit',
         headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-            // TODO: Inject authorization headers here 
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer'
@@ -204,14 +285,17 @@ async function deletePost(key) {
 
 // Post to API
 async function postData(url = '', data = {}) {
+    // Get the access token from the Auth0 client
+    const token = await auth0.getTokenSilently();
+
     const response = await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE
         mode: 'cors',
         cache: 'no-cache',
         credentials: 'omit',
         headers: {
-            'Content-Type': 'application/json'
-            // TODO: Inject authorization headers here 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         redirect: 'follow',
         referrerPolicy: 'no-referrer',

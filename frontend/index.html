@@ -18,76 +18,90 @@
 </head>
 
 <body>
+
     <div class="container">
-        <div class="func-section">
-            <h2>Write-Post</h2>
-            <p class="description">
-                Mithilfe diese Formulares lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
-                ausgefüllt sein.
-                Über den Submit-Button werden die Posts hochgeladen.
-                Ein Post kann geändert werden indem ein Post mit dem gleichen Namen erstellt wird. Dies funktioniert
-                jedoch nur
-                am gleichen Tag. Innerhalb des Textfeldes kann mit <a
-                    href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden
-            </p>
-
-            <!-- Formular for metadata upload-->
-            <div class="row metadata">
-                <div class="column">
-                    <label for="ftitle">Titel:</label>
-                    <input type="text" id="ftitle" name="title">
-                </div>
-                <div class="column">
-                    <label for="fdate">Datum:</label>
-                    <input type="text" id="fdate" name="date">
-                </div>
-                <div class="column">
-                    <label for="fauthor">Author:</label>
-                    <input type="text" id="fauthor" name="author">
-                </div>
-            </div>
-
-            <!-- Form for markdown writing and preview-->
-            <div class="row" id="writing">
-                <div class="column">
-                    <label>Post-Text schreiben:</label>
-                    <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
-                    <button id="bsubmit" onclick="submitPost()">Submit</button>
-                </div>
-                <div class="column">
-                    <label>Markdown-Preview</label>
-                    <div class="preview" id="preview"></div>
-                </div>
-            </div>
-            <!-- Post Upload END-->
+        <div class="auth">
+            <h1>hugo-s3-cms</h1>
+            <p>Dies ist die Startseite des Content-Managment Systems! Hier lassen sich Posts erstellen, anzeigen und
+                löschen. Um fortzufahren melde dich doch bitte an</p>
+            <button id="btn-login" disabled="true" onclick="login()">Log in</button>
+            <button id="btn-logout" disabled="true" onclick="logout()">Log out</button>
         </div>
 
-        <div class="func-section">
-            <h2>Manage Posts</h2>
-            <p class="description">
-                Hier kannst du dir alle Markdown-Dateien anzeigen lassen, die in den S3-Bucket hochgeladen wurden. Dir
-                werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
-            </p>
-            <!-- JS generated objects to display which objects currently are stored-->
-            <div id="objectList" class="row"></div>
-            <button class="button-outline" id="listObjects" onclick="listObjects()">Refresh Objects</button>
-        </div>
+        <div id="spa">
+            <div class="func-section">
+                <h2>Write-Post</h2>
+                <p class="description">
+                    Mithilfe diese Formulares lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
+                    ausgefüllt sein.
+                    Über den Submit-Button werden die Posts hochgeladen.
+                    Ein Post kann geändert werden indem ein Post mit dem gleichen Namen erstellt wird. Dies funktioniert
+                    jedoch nur
+                    am gleichen Tag. Innerhalb des Textfeldes kann mit <a
+                        href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden
+                </p>
 
+                <!-- Formular for metadata upload-->
+                <div class="row metadata">
+                    <div class="column">
+                        <label for="ftitle">Titel:</label>
+                        <input type="text" id="ftitle" name="title">
+                    </div>
+                    <div class="column">
+                        <label for="fdate">Datum:</label>
+                        <input type="text" id="fdate" name="date">
+                    </div>
+                    <div class="column">
+                        <label for="fauthor">Author:</label>
+                        <input type="text" id="fauthor" name="author">
+                    </div>
+                </div>
 
+                <!-- Form for markdown writing and preview-->
+                <div class="row" id="writing">
+                    <div class="column">
+                        <label>Post-Text schreiben:</label>
+                        <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
+                        <button id="bsubmit" onclick="submitPost()">Submit</button>
+                    </div>
+                    <div class="column">
+                        <label>Markdown-Preview</label>
+                        <div class="preview" id="preview"></div>
+                    </div>
+                </div>
+                <!-- Post Upload END-->
+            </div>
 
+            <div class="func-section">
+                <h2>Manage Posts</h2>
+                <p class="description">
+                    Hier kannst du dir alle Markdown-Dateien anzeigen lassen, die in den S3-Bucket hochgeladen wurden.
+                    Dir
+                    werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
+                </p>
+                <!-- JS generated objects to display which objects currently are stored-->
+                <div id="objectList" class="row"></div>
+                <button class="button-outline" id="listObjects" onclick="listObjects()">Refresh Objects</button>
+            </div>
 
-        <div class="row">
-            <div id="getPreview"></div>
+            <div class="row">
+                <div id="getPreview"></div>
+            </div>
         </div>
     </div>
 
 
 
-    <!-- Main JS File and external Scripts for markdown preview -->
-    <script src="scripts/main.js"></script>
+
+    <!-- Markdown Preview and HTML Sanitizer-->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.6/dist/purify.min.js"
         integrity="sha256-u729SS+rZJlPJbWgPeuX/57zEYMrpmb3EdiMug5IYNQ=" crossorigin="anonymous"></script>
+    <!-- Auth0 SDK-->
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+    <!-- Application Logic -->
+    <script src="scripts/main.js"></script>
+
 </body>
 
 </html>
