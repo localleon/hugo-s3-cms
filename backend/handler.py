@@ -38,11 +38,11 @@ def handler_get_file(event):
         else:
             return callback(404, None)
 
-    except KeyError as e:
+    except:
         return callback(
             401,
             {
-                "msg": "Malformed Request. You didn't specify which object should be deleted with a key. Did you provide a valid ressource"
+                "msg": "Malformed Request. You didn't specify which object should be accessed with a key. Did you provide a valid ressource"
             },
         )
 
@@ -54,7 +54,7 @@ def handler_delete_file(event):
         # Call the delete s3 function if we got a valid request
         s3_resp = delete_file_from_s3(key)
         return callback(s3_resp[0], s3_resp[1])
-    except KeyError as e:
+    except:
         return callback(
             401,
             {
@@ -66,9 +66,10 @@ def handler_delete_file(event):
 def handler_list_directory(event):
     """This handler returns the keys for all objects in the bucket"""
     try:
-        # look if the user requested a page, if not set default page to 1
+        # look if the user requested a page
         page = int(event["queryStringParameters"]["page"], 10)
-    except Exception as e:
+    except:
+        # if not provied, default value
         page = 1
 
     objects = list_objects_from_bucket_paged(page)
@@ -142,22 +143,22 @@ def list_objects_from_bucket():
     return keys
 
 
-def list_objects_from_bucket_paged(pageNum):
+def list_objects_from_bucket_paged(page_num):
     """Provides an paginated interface for the http-api to get objects keys from the bucket"""
     keys = list_objects_from_bucket()
 
     # we fake pagination on our api here. The real aws backend is not paginated -> can be implemented using boto3 collections but is complicated
-    pageIndex = calcPagingIndex(pageNum)
-    print(f"Returning paged results for {pageIndex[0]} till {pageIndex[1]}")
-    return keys[pageIndex[0] : pageIndex[1]]
+    page_index = calcPagingIndex(page_num)
+    print(f"Returning paged results for {page_index[0]} till {page_index[1]}")
+    return keys[page_index[0] : page_index[1]]
 
 
-def calcPagingIndex(pageNum):
+def calcPagingIndex(page_num):
     """Calculate the correct indexes for the paging size"""
-    pageSize = 8
-    pageStart = 0 if pageNum == 1 else (pageNum - 1) * pageSize
+    page_size = 8
+    page_start = 0 if page_num == 1 else (page_num - 1) * page_size
 
-    return (pageStart, pageStart + pageSize)
+    return (page_start, page_start + page_size)
 
 
 def get_body_from_event(event):
