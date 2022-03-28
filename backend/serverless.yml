@@ -7,6 +7,18 @@ provider:
   region: eu-central-1
   httpApi:
     cors: true
+    authorizers:
+      accessTokenAuth0: # define external jwt authorizer via the SaaS Plattform auth0
+        identitySource: $request.header.Authorization
+        issuerUrl: https://localleon.eu.auth0.com/
+        audience:
+          - urn:hugo-s3-api
+package:
+  patterns:
+    - "!.venv/**"
+    - "!.git/**"
+    - "!__pycache__/**" # for python 3.x
+    - "!node_modules/**"
 
 functions:
   main:
@@ -15,15 +27,26 @@ functions:
       - httpApi:
           path: /upload
           method: post
+          authorizer:
+            name: accessTokenAuth0
+
       - httpApi:
           path: /list
           method: get
+          authorizer:
+            name: accessTokenAuth0
+
       - httpApi:
           path: /delete/{key}
           method: DELETE
+          authorizer:
+            name: accessTokenAuth0
+
       - httpApi:
           path: /get/{key}
           method: GET
+          authorizer:
+            name: accessTokenAuth0
 
 plugins:
   - serverless-python-requirements
