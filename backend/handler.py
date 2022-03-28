@@ -169,7 +169,7 @@ def get_filename_from_post(title):
     """Converts the titel to a filename (cut length at 20),checks if we have safe characters in the path and adds a timestamp"""
     short_title = title.strip().replace(" ", "_")[:20]
     safe_chars = re.compile(
-        r"[a-zA-Z0-9.]*$"
+        r"[a-zA-Z0-9\-\s.]*$"
     )  # only alphabetic letters and numbers are allowed
 
     if safe_chars.match(short_title):
