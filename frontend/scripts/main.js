@@ -205,7 +205,7 @@ function listObjects() {
         for (var i = 0; i < keys.length; i += 2) {
 
             c1 = constructObject(keys[i])
-            c2 = constructObject(keys[i] + 1)
+            c2 = constructObject(keys[i + 1])
             row = constructObjectRow(c1, c2)
             list.appendChild(row)
         }
@@ -249,9 +249,7 @@ async function getObject(key) {
     // Get the access token from the Auth0 client
     const token = await auth0.getTokenSilently();
 
-    let url = apiUrl + "get?" + new URLSearchParams({
-        key: key
-    })
+    let url = apiUrl + "get/" + key
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
         mode: 'cors',
@@ -291,9 +289,7 @@ async function deletePost(key) {
     // Get the access token from the Auth0 client
     const token = await auth0.getTokenSilently();
 
-    let url = apiUrl + "delete?" + new URLSearchParams({
-        key: key
-    })
+    let url = apiUrl + "delete/" + key
     const response = await fetch(url, {
         method: 'DELETE', // *GET, POST, PUT, DELETE
         mode: 'cors',

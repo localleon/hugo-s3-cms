@@ -5,7 +5,6 @@ import boto3
 import re
 import datetime
 from html_sanitizer import Sanitizer
-import itertools
 
 # Config Option -> migrate to env variables
 bucket_name = "hugo-cms-store1"

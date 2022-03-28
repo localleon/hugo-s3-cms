@@ -47,6 +47,5 @@ functions:
           method: GET
           authorizer:
             name: accessTokenAuth0
-
 plugins:
   - serverless-python-requirements
