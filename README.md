@@ -4,7 +4,6 @@ hugo-s3-cms is a simple CMS for uploading markdown files into an Object Storage.
 
 ## ToDos 
 - Projektbericht schreiben
-- Authentifizierung
 - CodeReview
   - JS 
   - Python
@@ -12,7 +11,7 @@ hugo-s3-cms is a simple CMS for uploading markdown files into an Object Storage.
 - Unit-Tests 
 - Erweiterungsmöglichkeiten
   - WYSIWYG Editor einfügen
-
+- BUG: Spaces => Illegal Character in Handler upload_post
 
 ## Herausforderungen
 - XSS 

@@ -148,12 +148,12 @@ def list_objects_from_bucket_paged(page_num):
     keys = list_objects_from_bucket()
 
     # we fake pagination on our api here. The real aws backend is not paginated -> can be implemented using boto3 collections but is complicated
-    page_index = calcPagingIndex(page_num)
+    page_index = calc_paging_index(page_num)
     print(f"Returning paged results for {page_index[0]} till {page_index[1]}")
     return keys[page_index[0] : page_index[1]]
 
 
-def calcPagingIndex(page_num):
+def calc_paging_index(page_num):
     """Calculate the correct indexes for the paging size"""
     page_size = 8
     page_start = 0 if page_num == 1 else (page_num - 1) * page_size

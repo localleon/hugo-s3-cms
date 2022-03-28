@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="de">
 
 <head>
     <meta charset="utf-8" />
@@ -24,7 +24,7 @@
             <h1>hugo-s3-cms</h1>
             <p>Dies ist die Startseite des Content-Managment Systems! Hier lassen sich Posts erstellen, anzeigen und
                 löschen. Um fortzufahren melde dich doch bitte an</p>
-            <button id="btn-login" disabled="true" onclick="login()">Log in</button>
+            <button id="btn-login" onclick="login()">Log in</button>
             <button id="btn-logout" disabled="true" onclick="logout()">Log out</button>
         </div>
 
@@ -75,20 +75,24 @@
             <div class="func-section">
                 <h2>Posts anzeigen/löschen:</h2>
                 <p class="description">
-                    Hier kannst du dir alle Markdown-Dateien anzeigen lassen, die in den S3-Bucket hochgeladen wurden.
-                    Dir
-                    werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
+                    Hier kannst du dir alle Post-Dateien anzeigen lassen, die in das CMS hochgeladen wurden.
+                    Dir werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
                 </p>
                 <!-- JS generated objects to display which objects currently are stored-->
                 <div id="objectList">
                 </div>
+
+                <!-- Pagination Implentation-->
+                <p>Nächste/Vorherige Seite:</p>
+                <div class="pagination">
+                    <button onClick="pageDown()">❮</button>
+                    <button onClick="pageUp()">❯</button>
+                </div>
                 <button class="button-outline" id="listObjects" onclick="listObjects()">Refresh Objects</button>
-            </div>
 
-            <div class="row">
-                <div id="getPreview">
-
-
+                <!-- Preview oft the getObjects()-->
+                <div class="row">
+                    <div id="getPreview"></div>
                 </div>
             </div>
         </div>

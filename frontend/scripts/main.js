@@ -5,6 +5,7 @@ var timer = null;
 var auth0 = null;
 var token = null;
 var refreshDelay = 4000;
+var pageCounter = 1;
 
 // initalize the application
 window.onload = async () => {
@@ -91,31 +92,54 @@ function preview() {
     let text = document.getElementById('mdUserText').value
     // Sanitize the HTML from the server here to prevent XSS 
     let clean = DOMPurify.sanitize(text);
+
+    marked.use({
+        breaks: true,
+        sanitize: true,
+    });
+
     // Preview in box
     document.getElementById('preview').innerHTML = marked.parse(clean);
 }
 
-// Interaction with the HTTP Api 
-function submitPost() {
-    // Construct json object from form 
-    let post = {
+
+function getPostContent() {
+    return {
         "title": document.getElementById('ftitle').value,
         "date": document.getElementById('fdate').value,
         "author": document.getElementById('fauthor').value,
         "content": document.getElementById('mdUserText').value
     }
+}
+
+// Interaction with the HTTP Api 
+function submitPost() {
+    // Construct json object from form 
+    let post = getPostContent()
 
     let url = apiUrl + "upload"
     // Upload post via Rest-Api 
-    postData(url, post).then(data => {
-        Swal.fire({
-            title: 'Post erstellt.',
-            text: data['msg'],
-            icon: "success",
-        })
-        // Refresh view
-        clearPostFields();
-        setTimeout(listObjects(), refreshDelay);
+    postData(url, post).then(response => {
+        if (response.status != 400) {
+            response.json().then(data => {
+                Swal.fire({
+                    title: 'Post erstellt.',
+                    text: data['msg'],
+                    icon: "success",
+                });
+                // Refresh view
+                clearPostFields();
+                setTimeout(listObjects, refreshDelay);
+            })
+        } else {
+            response.json().then(data => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Etwas ist schiefgelaufen :-(',
+                    text: data['msg'],
+                });
+            })
+        }
     }).catch((error) => {
         Swal.fire({
             title: 'Post erstellt.',
@@ -135,11 +159,13 @@ function clearPostFields() {
 
 
 function constructObjectRow(child1, child2) {
-    // Creating wrapper object for file object 
-    let div = document.createElement("div")
-    div.setAttribute("class", "row")
-    div.appendChild(child1)
-    div.appendChild(child2)
+    // check if the provided vars are actual objects
+    if (child1 != null) {
+        div.appendChild(child1)
+    }
+    if (child2 != null) {
+        div.appendChild(child2)
+    }
     return div
 }
 
@@ -187,36 +213,60 @@ function constructObject(key) {
     return div
 }
 
-function getPageCounter() {
-    return 1
-}
-
 function listObjects() {
     // Reset preview of objects
     document.getElementById('getPreview').innerHTML = null;
 
     // Get Objects keys from api
-    getObjects(getPageCounter()).then(objects => {
+    getObjects(pageCounter).then(objects => {
         let keys = objects['Contents'];
         let list = document.getElementById('objectList');
         list.innerHTML = null;
 
+        // Output a warning message if the user reaches an empty object page
+        if (keys.length == 0) {
+            Swal.fire({
+                icon: "info",
+                text: "Es existieren keine weiteren Objekte"
+            });
+        }
+
         // Construct HTML Objects to display object keys
         for (var i = 0; i < keys.length; i += 2) {
-            let row = constructObjectRow(constructObject(keys[i]), constructObject(keys[i + 1]));
-            list.appendChild(row);
+
+            // Check if we have file objects and then create a control html element for them
+            let div = document.createElement("div")
+            div.setAttribute("class", "row")
+            if (keys[i]) {
+                div.append(constructObject(keys[i]))
+            }
+            if (keys[i + 1]) {
+                div.append(constructObject(keys[i + 1]))
+            }
+            list.appendChild(div);
         }
     })
 }
 
+function pageUp() {
+    pageCounter += 1
+    listObjects()
+}
+
+function pageDown() {
+    if (pageCounter > 1) {
+        pageCounter -= 1
+        listObjects()
+    }
+}
 
 function displayPost(key) {
     getObject(key).then(resp => {
         // The .md files on the server are in Hugo-Format. We need to extract only the markdown content from the files
         let postParts = atob(resp['body']).split('---');
         document.getElementById('getPreview').innerHTML = marked.parse(postParts[2]);
-    }).then((error) => {
-        swal({
+    }).catch((error) => {
+        Swal.fire({
             icon: "error",
             text: "Ein Error ist mit der API aufgetreten." + error
         });
@@ -236,7 +286,7 @@ function deletePostPrompt(key) {
             Swal.fire('Poof! Deine Post wurde gelöscht!', '', 'success')
             deletePost(key)
             // Refresh view 
-            setTimeout(listObjects(), refreshDelay)
+            setTimeout(listObjects, refreshDelay)
         }
     })
 
@@ -263,7 +313,9 @@ async function getObject(key) {
 }
 
 async function getObjects(pageNum) {
-    let url = apiUrl + "list"
+    let url = apiUrl + "list?" + new URLSearchParams({
+        page: pageNum
+    })
 
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE
@@ -312,5 +364,5 @@ async function postData(url = '', data = {}) {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
     });
-    return response.json();
+    return response;
 }
