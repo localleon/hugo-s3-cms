@@ -173,12 +173,13 @@ def get_body_from_event(event):
 
 def get_filename_from_post(title):
     """Converts the titel to a filename (cut length at 20),checks if we have safe characters in the path and adds a timestamp"""
-    short_title = title.strip().replace(" ", "_")[:20]
+    title = title.strip()
     safe_chars = re.compile(
         r"[a-zA-Z0-9\-\s.]*$"
     )  # only alphabetic letters and numbers are allowed
 
-    if safe_chars.match(short_title):
+    if safe_chars.match(title):
+        short_title = title.replace(" ", "_")[:20]
         return f"{datetime.date.today().isoformat()}_{short_title}.md"
     else:
         return None
@@ -194,16 +195,12 @@ def write_to_s3(file, filename, path=None):
 
 def create_post_file(params):
     """Create_post_file builds a virtual file in memory and returns it"""
-
-    print(params["content"])
     # sanitize the post json for malicious/wrong input
     c_params = sanitize_post_params(params)
 
     # construct strings for the file
     metadata = f"---\ntitle: {c_params['title']}\ndate: {c_params['date']}\nauthor: {c_params['author']}\ndraft: false\n"
     content = f"---\n{c_params['content']}\n---\n"
-
-    print(content)
 
     # we create a file in memory, content of markdown needs to be encoded into bytes
     md_file = io.BytesIO()
