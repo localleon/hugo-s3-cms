@@ -11,7 +11,10 @@ hugo-s3-cms is a simple CMS for uploading markdown files into an Object Storage.
 - Unit-Tests 
 - Erweiterungsmöglichkeiten
   - WYSIWYG Editor einfügen
-- BUG: Spaces => Illegal Character in Handler upload_post
+- BUG: 
+  - Umlaute im Text erlauben.
+  - Spaces im Titel
+
 
 ## Herausforderungen
 - XSS 

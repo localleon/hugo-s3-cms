@@ -70,8 +70,12 @@ const updateUI = async () => {
 
     if (isAuthenticated) {
         document.getElementById("spa").style.visibility = "visible";
+        document.getElementById("login-text").style.visibility = "hidden";
+
+
         listObjects()
     } else {
+        document.getElementById("login-text").style.visibility = "visible";
         document.getElementById("spa").style.visibility = "hidden";
     }
 };

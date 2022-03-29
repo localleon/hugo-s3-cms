@@ -4,7 +4,7 @@ import io
 import boto3
 import re
 import datetime
-from html_sanitizer import Sanitizer
+import bleach
 
 # Config Option -> migrate to env variables
 bucket_name = "hugo-cms-store1"
@@ -188,12 +188,16 @@ def write_to_s3(file, filename, path=None):
 
 def create_post_file(params):
     """Create_post_file builds a virtual file in memory and returns it"""
+
+    print(params["content"])
     # sanitize the post json for malicious/wrong input
     c_params = sanitize_post_params(params)
 
     # construct strings for the file
     metadata = f"---\ntitle: {c_params['title']}\ndate: {c_params['date']}\nauthor: {c_params['author']}\ndraft: false\n"
     content = f"---\n{c_params['content']}\n---\n"
+
+    print(content)
 
     # we create a file in memory, content of markdown needs to be encoded into bytes
     md_file = io.BytesIO()
@@ -205,7 +209,7 @@ def create_post_file(params):
 
 def sanitize_post_params(params):
     """Sanitize the post parameters for malicious html"""
-    return {k: Sanitizer().sanitize(v) for k, v in params.items()}
+    return {k: bleach.clean(v) for k, v in params.items()}
 
 
 def validate_post_json(params):
