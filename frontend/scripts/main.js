@@ -267,7 +267,7 @@ function pageDown() {
 function displayPost(key) {
     getObject(key).then(resp => {
         // The .md files on the server are in Hugo-Format. We need to extract only the markdown content from the files
-        let postParts = atob(resp['body']).split('---');
+        let postParts = b64DecodeUnicode(resp['body']).split('---');
         document.getElementById('getPreview').innerHTML = marked.parse(postParts[2]);
     }).catch((error) => {
         Swal.fire({
@@ -275,6 +275,13 @@ function displayPost(key) {
             text: "Ein Error ist mit der API aufgetreten." + error
         });
     });
+}
+
+function b64DecodeUnicode(str) {
+    // b54 decoding  from bytestream, to percent-encoding, to original string. We can't use atob() if we want to preserve the utf-8 functionality 
+    return decodeURIComponent(atob(str).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
 }
 
 function deletePostPrompt(key) {

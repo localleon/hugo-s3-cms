@@ -38,11 +38,11 @@ def handler_get_file(event):
         else:
             return callback(404, None)
 
-    except:
+    except KeyError:
         return callback(
             401,
             {
-                "msg": "Malformed Request. You didn't specify which object should be accessed with a key. Did you provide a valid ressource"
+                "msg": "Malformed Request. You didn't specify which object should be accessed with a key. Did you provide a valid ressource?"
             },
         )
 
@@ -54,7 +54,7 @@ def handler_delete_file(event):
         # Call the delete s3 function if we got a valid request
         s3_resp = delete_file_from_s3(key)
         return callback(s3_resp[0], s3_resp[1])
-    except:
+    except KeyError:
         return callback(
             401,
             {
@@ -68,7 +68,7 @@ def handler_list_directory(event):
     try:
         # look if the user requested a page
         page = int(event["queryStringParameters"]["page"], 10)
-    except:
+    except ValueError:
         # if not provied, default value
         page = 1
 
@@ -114,8 +114,14 @@ def get_file_from_s3(key):
     # return the file as a base64 encoded string
     return (
         202,
-        base64.b64encode(buf.read()).decode(),
+        encode_textfile_to_b64(file_bytes=buf.read()),
     )
+
+
+def encode_textfile_to_b64(file_bytes):
+    """Convert bytes object into utf-8 b64 encoded string"""
+    b = base64.b64encode(file_bytes)
+    return b.decode("UTF-8")
 
 
 def delete_file_from_s3(key):
