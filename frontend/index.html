@@ -18,105 +18,116 @@
 </head>
 
 <body>
+    <main class="wrapper">
 
-    <div class="container">
-        <div class="auth func-section">
-            <h1>hugo-s3-cms</h1>
-            <p>Dies ist die Startseite des Content-Managment Systems! Hier lassen sich Posts erstellen, anzeigen und
-                löschen. </p>
-            <p id="login-text">Um fortzufahren melde dich doch bitte an!</p>
-            <button id="btn-login" onclick="login()">Log in</button>
-            <button id="btn-logout" disabled="true" onclick="logout()">Log out</button>
+        <div class='navbar'>
+            <ul>
+                <li id="btn-logout" onclick="logout()">Logout</li>
+                <li id="btn-login" onclick="login()">Login</li>
+                <p id="heading">hugo-s3-cms</p>
+            </ul>
         </div>
 
-        <div id="spa">
-            <div class="func-section">
-                <h2>Post schreiben:</h2>
-                <p class="description">
-                    Mithilfe diese Formulares lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
-                    ausgefüllt sein.
-                    Über den Submit-Button werden die Posts hochgeladen.
-                    Ein Post kann geändert werden indem ein Post mit dem gleichen Namen erstellt wird. Dies funktioniert
-                    jedoch nur
-                    am gleichen Tag. Innerhalb des Textfeldes kann mit <a
-                        href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden
-                </p>
+        <!-- Site content -->
+        <div class="container">
+            <div class="auth func-section">
+                <p>Dies ist die Startseite des Content-Managment Systems! Hier lassen sich Posts erstellen, anzeigen und
+                    löschen. </p>
+                <p id="login-text">Um fortzufahren melde dich doch bitte an!</p>
 
-                <!-- Formular for metadata upload-->
-                <div class="row metadata">
-                    <div class="column">
-                        <label for="ftitle">Titel:</label>
-                        <input type="text" id="ftitle" name="title">
-                    </div>
-                    <div class="column">
-                        <label for="fdate">Datum:</label>
-                        <input type="date" id="fdate" name="date">
-                    </div>
-                    <div class="column">
-                        <label for="fauthor">Author:</label>
-                        <input type="text" id="fauthor" name="author">
-                    </div>
-                </div>
-
-                <!-- Form for markdown writing and preview-->
-                <div class="row" id="writing">
-                    <div class="column">
-                        <label>Post-Text schreiben:</label>
-                        <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
-                        <button id="bsubmit" onclick="submitPost()">Submit</button>
-                    </div>
-                    <div class="column">
-                        <label>Markdown-Preview</label>
-                        <div class="preview" id="preview"></div>
-                    </div>
-                </div>
-                <!-- Post Upload END-->
             </div>
 
-            <div class="func-section">
-                <h2>Posts anzeigen/löschen:</h2>
-                <p class="description">
-                    Hier kannst du dir alle Post-Dateien anzeigen lassen, die in das CMS hochgeladen wurden.
-                    Dir werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
-                </p>
-                <!-- JS generated objects to display which objects currently are stored-->
-                <div id="objectList">
+            <div id="spa">
+                <div class="func-section">
+                    <h2>Post schreiben:</h2>
+                    <p class="description">
+                        Mithilfe diese Formulares lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
+                        ausgefüllt sein.
+                        Über den Submit-Button werden die Posts hochgeladen.
+                        Ein Post kann geändert werden indem ein Post mit dem gleichen Namen erstellt wird. Dies
+                        funktioniert
+                        jedoch nur
+                        am gleichen Tag. Innerhalb des Textfeldes kann mit <a target="_blank"
+                            href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden
+                    </p>
+
+                    <!-- Formular for metadata upload-->
+                    <div class="row metadata">
+                        <div class="column">
+                            <label for="ftitle">Titel:</label>
+                            <input type="text" id="ftitle" name="title">
+                        </div>
+                        <div class="column">
+                            <label for="fdate">Datum:</label>
+                            <input type="date" id="fdate" name="date">
+                        </div>
+                        <div class="column">
+                            <label for="fauthor">Author:</label>
+                            <input type="text" id="fauthor" name="author">
+                        </div>
+                    </div>
+
+                    <!-- Form for markdown writing and preview-->
+                    <div class="row" id="writing">
+                        <div class="column">
+                            <label>Post-Text schreiben:</label>
+                            <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
+                            <button id="bsubmit" onclick="submitPost()">Submit</button>
+                        </div>
+                        <div class="column">
+                            <label>Markdown-Preview</label>
+                            <div class="preview" id="preview"></div>
+                        </div>
+                    </div>
+                    <!-- Post Upload END-->
                 </div>
 
-                <!-- Pagination Implentation-->
-                <p>Nächste/Vorherige Seite:</p>
-                <div class="pagination">
-                    <button onClick="pageDown()">❮</button>
-                    <button onClick="pageUp()">❯</button>
-                </div>
-                <button class="button-outline" id="listObjects" onclick="listObjects()">Refresh Objects</button>
+                <div class="func-section">
+                    <h2>Posts anzeigen/löschen:</h2>
+                    <p class="description">
+                        Hier kannst du dir alle Post-Dateien anzeigen lassen, die in das CMS hochgeladen wurden.
+                        Dir werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
+                    </p>
+                    <!-- JS generated objects to display which objects currently are stored-->
+                    <div id="objectList">
+                    </div>
 
-                <!-- Preview oft the getObjects()-->
-                <div class="row">
-                    <div id="getPreview"></div>
+                    <!-- Pagination Implentation-->
+                    <p>Nächste/Vorherige Seite:</p>
+                    <div class="pagination row">
+                        <button id="btn-pageDown" disabled="true" onClick="pageDown()">❮</button>
+                        <p id="pageNumCounter">1</p>
+                        <button id="btn-pageUp" onClick="pageUp()">❯</button>
+                        <button class="button-outline" id="listObjects" onclick="pagedObjectPreview()">Refresh
+                            Objects</button>
+                    </div>
+
+                    <!-- Preview oft the getObjects()-->
+                    <div class="row">
+                        <div id="getPreview"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
 
 
-    <!-- Markdown Preview and HTML Sanitizer-->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
-        integrity="sha512-Q/4qFAE4S3u1rkJueilQDK2rePWEnBTk744QY0eD+fOcxiVfz/9mBY0BU3zupIfxY0ewDWZs5MAAW2d1s9dWXA=="
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.6/dist/purify.min.js"
-        integrity="sha256-u729SS+rZJlPJbWgPeuX/57zEYMrpmb3EdiMug5IYNQ=" crossorigin="anonymous"></script>
-    <!-- Auth0 SDK-->
-    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"
-        integrity="sha512-I3xjWOcpBPlEX9u3nRtqY2P6H8j7zqVUIXGs7B1vmNSSrkPeFGPoCwVh9NQ09tRC+FjNobpUJupBj5IBcCgQUw=="
-        crossorigin="anonymous"></script> <!-- Alert Styling-->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.7/dist/sweetalert2.all.min.js"
-        integrity="sha256-eTz92F43Upy5TN7f6frMgWI4eQgs0XEL7zBu8A8k7tk=" crossorigin="anonymous"></script>
-    <!-- Application Logic -->
-    <script src="scripts/main.js"></script>
-
+        <!-- Markdown Preview and HTML Sanitizer-->
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
+            integrity="sha512-Q/4qFAE4S3u1rkJueilQDK2rePWEnBTk744QY0eD+fOcxiVfz/9mBY0BU3zupIfxY0ewDWZs5MAAW2d1s9dWXA=="
+            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.6/dist/purify.min.js"
+            integrity="sha256-u729SS+rZJlPJbWgPeuX/57zEYMrpmb3EdiMug5IYNQ=" crossorigin="anonymous"></script>
+        <!-- Auth0 SDK-->
+        <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"
+            integrity="sha512-I3xjWOcpBPlEX9u3nRtqY2P6H8j7zqVUIXGs7B1vmNSSrkPeFGPoCwVh9NQ09tRC+FjNobpUJupBj5IBcCgQUw=="
+            crossorigin="anonymous"></script> <!-- Alert Styling-->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.7/dist/sweetalert2.all.min.js"
+            integrity="sha256-eTz92F43Upy5TN7f6frMgWI4eQgs0XEL7zBu8A8k7tk=" crossorigin="anonymous"></script>
+        <!-- Application Logic -->
+        <script src="scripts/main.js"></script>
+    </main>
 </body>
 
 </html>

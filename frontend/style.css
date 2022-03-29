@@ -1,3 +1,43 @@
+/* Header */
+
+.navbar {
+    border-bottom: 1px lightslategrey solid;
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.navbar li {
+    float: right;
+    margin-bottom: 0;
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.navbar li:hover {
+    background-color: #9b4dca;
+    color: white;
+}
+
+#heading {
+    float: left;
+    display: block;
+    text-align: center;
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    margin-bottom: 0;
+}
+
 /* Texts and general stuff */
 .container {
     padding: 3em;
@@ -69,25 +109,12 @@ h1 {
     border: solid black 1px;
 }
 
+/* Pagination  */
+
 #pageNumCounter {
     max-width: 7em;
 }
 
-.pagination {
-    display: inline-block;
-}
-
-.pagination a {
-    color: black;
-    float: left;
-    padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color .3s;
-    border: 1px solid #ddd;
-}
-
-.pagination a.active {
-    background-color: #4CAF50;
-    color: white;
-    border: 1px solid #4CAF50;
+.pagination button {
+    margin: 0 1em;
 }

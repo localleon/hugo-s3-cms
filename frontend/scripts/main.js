@@ -9,16 +9,20 @@ var pageCounter = 1;
 
 // initalize the application
 window.onload = async () => {
+
+    // setup auth0
     await configureClient();
     const isAuthenticated = await auth0.isAuthenticated();
 
     if (isAuthenticated) {
         // show the gated content
         token = await auth0.getTokenSilently();
-        updateUI();
+        updateUI()
+
+        pagedObjectPreview()
+
         return;
     }
-
     // check for the code and state parameters
     const query = window.location.search;
     if (query.includes("code=") && query.includes("state=")) {
@@ -26,13 +30,17 @@ window.onload = async () => {
         // Process the login state
         await auth0.handleRedirectCallback();
         token = await auth0.getTokenSilently();
-
-        updateUI();
+        updateUI()
 
         // Use replaceState to redirect the user away and remove the querystring parameters
         window.history.replaceState({}, document.title, "/");
+
+        // Load List Objects 
+        pagedObjectPreview()
     }
 };
+
+// Auth Stuff
 
 const fetchAuthConfig = () => fetch("/auth_config.json");
 
@@ -60,25 +68,36 @@ const logout = () => {
     });
 };
 
+
 const updateUI = async () => {
     // hide contents of the single-page-application to make the login feel more fluid
-
     const isAuthenticated = await auth0.isAuthenticated();
-
-    document.getElementById("btn-logout").disabled = !isAuthenticated;
-    document.getElementById("btn-login").disabled = isAuthenticated;
-
-    if (isAuthenticated) {
-        document.getElementById("spa").style.visibility = "visible";
-        document.getElementById("login-text").style.visibility = "hidden";
-
-
-        listObjects()
-    } else {
-        document.getElementById("login-text").style.visibility = "visible";
-        document.getElementById("spa").style.visibility = "hidden";
-    }
+    console.log(isAuthenticated)
+    setDisplayByID("btn-login", !isAuthenticated)
+    setDisplayByID("btn-logout", isAuthenticated)
+    setVisibilityByID("spa", isAuthenticated)
+    setVisibilityByID("login-text", !isAuthenticated)
 };
+
+function setDisplayByID(id, boolean) {
+    var elm = document.getElementById(id)
+    if (boolean) {
+        elm.style.display = "block";
+    } else {
+        elm.style.display = "none";
+    }
+}
+
+function setVisibilityByID(id, boolean) {
+    var elm = document.getElementById(id)
+
+    if (boolean) {
+        elm.style.visibility = "visible"
+    } else {
+        elm.style.visibility = "hidden"
+    }
+}
+
 
 // Markdown Preview Stuff 
 
@@ -107,6 +126,28 @@ function preview() {
 }
 
 
+function displayPost(key) {
+    getObject(key).then(resp => {
+        // The .md files on the server are in Hugo-Format. We need to extract only the markdown content from the files
+        let postParts = b64DecodeUnicode(resp['body']).split('---');
+        document.getElementById('getPreview').innerHTML = marked.parse(postParts[2]);
+    }).catch((error) => {
+        Swal.fire({
+            icon: "error",
+            text: "Ein Error ist mit der API aufgetreten." + error
+        });
+    });
+}
+
+function b64DecodeUnicode(str) {
+    // b54 decoding  from bytestream, to percent-encoding, to original string. We can't use atob() if we want to preserve the utf-8 functionality 
+    return decodeURIComponent(atob(str).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+
+// Post Submitting 
+
 function getPostContent() {
     return {
         "title": document.getElementById('ftitle').value,
@@ -116,7 +157,6 @@ function getPostContent() {
     }
 }
 
-// Interaction with the HTTP Api 
 function submitPost() {
     // Construct json object from form 
     let post = getPostContent()
@@ -133,7 +173,7 @@ function submitPost() {
                 });
                 // Refresh view
                 clearPostFields();
-                setTimeout(listObjects, refreshDelay);
+                setTimeout(pagedObjectPreview, refreshDelay);
             })
         } else {
             response.json().then(data => {
@@ -154,6 +194,7 @@ function submitPost() {
 }
 
 function clearPostFields() {
+    // Clear all fields for a fresh start
     document.getElementById('preview').innerHTML = null
     document.getElementById('ftitle').value = ""
     document.getElementById('fdate').value = ""
@@ -161,6 +202,8 @@ function clearPostFields() {
     document.getElementById('mdUserText').value = ""
 }
 
+
+// Object Preview
 
 function constructObjectRow(child1, child2) {
     // check if the provided vars are actual objects
@@ -217,72 +260,88 @@ function constructObject(key) {
     return div
 }
 
-function listObjects() {
+function previewObjects(objectKeys) {
     // Reset preview of objects
     document.getElementById('getPreview').innerHTML = null;
+    let list = document.getElementById('objectList');
+    list.innerHTML = null;
 
-    // Get Objects keys from api
-    getObjects(pageCounter).then(objects => {
-        let keys = objects['Contents'];
-        let list = document.getElementById('objectList');
-        list.innerHTML = null;
 
-        // Output a warning message if the user reaches an empty object page
-        if (keys.length == 0) {
-            Swal.fire({
-                icon: "info",
-                text: "Es existieren keine weiteren Objekte"
-            });
+    // Output a warning message if the user reaches an empty object page
+    if (objectKeys.length == 0) {
+        Swal.fire({
+            icon: "info",
+            text: "Es existieren keine weiteren Objekte"
+        });
+    }
+
+    // Construct HTML Objects to display object keys
+    for (var i = 0; i < objectKeys.length; i += 2) {
+
+        // Check if we have file objects and then create a control html element for them
+        let div = document.createElement("div")
+        div.setAttribute("class", "row")
+        if (objectKeys[i]) {
+            div.append(constructObject(objectKeys[i]))
         }
-
-        // Construct HTML Objects to display object keys
-        for (var i = 0; i < keys.length; i += 2) {
-
-            // Check if we have file objects and then create a control html element for them
-            let div = document.createElement("div")
-            div.setAttribute("class", "row")
-            if (keys[i]) {
-                div.append(constructObject(keys[i]))
-            }
-            if (keys[i + 1]) {
-                div.append(constructObject(keys[i + 1]))
-            }
-            list.appendChild(div);
+        if (objectKeys[i + 1]) {
+            div.append(constructObject(objectKeys[i + 1]))
         }
-    })
+        list.appendChild(div);
+    }
+}
+
+function pagedObjectPreview() {
+    // Helper Function for previewing the current page 
+    getObjectKeysForCurrentPage().then(data => {
+        previewObjects(data);
+        updatePagingUI()
+    });
+}
+
+async function updatePagingUI() {
+    // update paging counter asynchronisly 
+    document.getElementById("pageNumCounter").innerHTML = pageCounter
+
+    // request the next page from the api and 
+    getObjects(pageCounter + 1).then(response => {
+        let keys = response['Contents'];
+
+        // update the button status to reflect if we have more pages or not
+        let apiHasMoreItems = (keys.length != 0)
+        document.getElementById("btn-pageUp").disabled = !apiHasMoreItems
+
+        // Enable and disable the back button if we have pages over 1
+        if (pageCounter == 1) {
+            document.getElementById("btn-pageDown").disabled = true
+        } else {
+            document.getElementById("btn-pageDown").disabled = false
+
+        }
+    });
 }
 
 function pageUp() {
     pageCounter += 1
-    listObjects()
+    pagedObjectPreview()
 }
 
 function pageDown() {
     if (pageCounter > 1) {
         pageCounter -= 1
-        listObjects()
+        pagedObjectPreview()
     }
 }
 
-function displayPost(key) {
-    getObject(key).then(resp => {
-        // The .md files on the server are in Hugo-Format. We need to extract only the markdown content from the files
-        let postParts = b64DecodeUnicode(resp['body']).split('---');
-        document.getElementById('getPreview').innerHTML = marked.parse(postParts[2]);
-    }).catch((error) => {
-        Swal.fire({
-            icon: "error",
-            text: "Ein Error ist mit der API aufgetreten." + error
-        });
-    });
+function getObjectKeysForCurrentPage() {
+    // Extract Keys for current page
+    return getObjects(pageCounter).then(response => {
+        return response['Contents'];
+    })
 }
 
-function b64DecodeUnicode(str) {
-    // b54 decoding  from bytestream, to percent-encoding, to original string. We can't use atob() if we want to preserve the utf-8 functionality 
-    return decodeURIComponent(atob(str).split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-}
+
+// Delete Functionallity
 
 function deletePostPrompt(key) {
     // Confirm if the user really wants to delete the item
@@ -297,10 +356,9 @@ function deletePostPrompt(key) {
             Swal.fire('Poof! Deine Post wurde gelöscht!', '', 'success')
             deletePost(key)
             // Refresh view 
-            setTimeout(listObjects, refreshDelay)
+            setTimeout(pagedObjectPreview, refreshDelay)
         }
     })
-
 }
 
 
@@ -340,7 +398,8 @@ async function getObjects(pageNum) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
     });
-    return response.json();
+    const body = await response.json()
+    return body;
 }
 
 async function deletePost(key) {
@@ -358,10 +417,12 @@ async function deletePost(key) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer'
     });
-    return response.json();
+    const body = await response.json()
+    return body;
 }
 
 async function postData(url = '', data = {}) {
+    // The response of the 
     const response = await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE
         mode: 'cors',
