@@ -8,8 +8,12 @@ import bleach
 
 
 def main_handler(event, context):
+    # Prepare Execution
+    print("Lambda function ARN:", context.invoked_function_arn)
+    print(event)
     init_s3()
 
+    # Extract Event/Context
     req_path = event["rawPath"]
 
     # Routing inside the lambda function, we don't need multiple lambda functions for our api

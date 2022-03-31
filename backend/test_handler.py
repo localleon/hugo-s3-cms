@@ -16,10 +16,10 @@ def load_sample_event(path):
 
 def test_callback():
     """Check if the AWS Event Callback function works properly"""
-    testBody = {"msg": "Error1", "Content": "Content1"}
+    test_body = {"msg": "Error1", "Content": "Content1"}
 
     # Check correct callback http code
-    resp = handler.callback(404, testBody)
+    resp = handler.callback(404, test_body)
     assert resp["statusCode"] == 404
     assert resp["statusCode"] != 202
 
@@ -71,7 +71,7 @@ def test_get_body_from_event():
 
     assert body["title"] == "SpecialChars"
     assert body["author"] == "Rauschenberg"
-    assert not len(body["content"]) == 0
+    assert len(body["content"]) != 0
     # check if error handling is done correctly
     assert not handler.get_body_from_event(None)
 

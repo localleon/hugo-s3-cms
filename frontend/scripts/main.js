@@ -378,7 +378,7 @@ async function getObject(key) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer'
     });
-    return response.json();
+    return await response.json();
 }
 
 async function getObjects(pageNum) {
@@ -398,8 +398,7 @@ async function getObjects(pageNum) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
     });
-    const body = await response.json()
-    return body;
+    return await response.json();
 }
 
 async function deletePost(key) {
@@ -417,8 +416,7 @@ async function deletePost(key) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer'
     });
-    const body = await response.json()
-    return body;
+    return await response.json();
 }
 
 async function postData(url = '', data = {}) {
