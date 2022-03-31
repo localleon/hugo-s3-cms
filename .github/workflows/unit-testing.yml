@@ -19,15 +19,11 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Set Backend Directory
+      - name: Set Backend Directory & install Python Dependencies
         run: |
           cd backend
           ls -alt
-
-      - name: Install Python dependencies
-        run: |
           python3 -m pip install --upgrade pip
-          cat requirements.txt
           pip3 install -r requirements.txt
 
       - name: Test with pytest
