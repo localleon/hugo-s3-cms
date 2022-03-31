@@ -6,17 +6,10 @@ import re
 import datetime
 import bleach
 
-# Config Option -> migrate to env variables
-bucket_name = "hugo-cms-store1"
-s3 = boto3.client("s3")
-
-
-def call(x, y):
-    return x and y
-
 
 def main_handler(event, context):
-    print(event)
+    init_s3()
+
     req_path = event["rawPath"]
 
     # Routing inside the lambda function, we don't need multiple lambda functions for our api
@@ -28,6 +21,13 @@ def main_handler(event, context):
         return handler_get_file(event)
     elif req_path.startswith("/delete/"):
         return handler_delete_file(event)
+
+
+def init_s3():
+    # Config Option -> migrate to env variables
+    global s3, bucket_name
+    bucket_name = "hugo-cms-store1"
+    s3 = boto3.client("s3")
 
 
 def handler_get_file(event):
@@ -149,8 +149,10 @@ def delete_file_from_s3(key):
 def list_objects_from_bucket():
     """Provides all markdown objects keys from the configured bucket"""
     s3_resp = s3.list_objects_v2(Bucket=bucket_name, Delimiter="/")
-    keys = [obj["Key"] for obj in s3_resp["Contents"] if ".md" in obj["Key"]]
-    return keys
+    if s3_resp["KeyCount"] != 0:
+        return [obj["Key"] for obj in s3_resp["Contents"] if ".md" in obj["Key"]]
+    else:
+        return []
 
 
 def list_objects_from_bucket_paged(page_num):
