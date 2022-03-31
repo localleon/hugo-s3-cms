@@ -17,6 +17,7 @@ jobs:
       - name: Set Backend Directory
         run: |
           cd backend
+          ls -alt
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
