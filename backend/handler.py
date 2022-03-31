@@ -11,6 +11,10 @@ bucket_name = "hugo-cms-store1"
 s3 = boto3.client("s3")
 
 
+def call(x, y):
+    return x and y
+
+
 def main_handler(event, context):
     print(event)
     req_path = event["rawPath"]
@@ -143,9 +147,9 @@ def delete_file_from_s3(key):
 
 
 def list_objects_from_bucket():
-    """Provides all object keys from the configured bucket"""
+    """Provides all markdown objects keys from the configured bucket"""
     s3_resp = s3.list_objects_v2(Bucket=bucket_name, Delimiter="/")
-    keys = [obj["Key"] for obj in s3_resp["Contents"]]
+    keys = [obj["Key"] for obj in s3_resp["Contents"] if ".md" in obj["Key"]]
     return keys
 
 
@@ -160,15 +164,27 @@ def list_objects_from_bucket_paged(page_num):
 
 
 def calc_paging_index(page_num):
-    """Calculate the correct indexes for the paging size"""
+    """Calculate the correct indexes for the paging size -> Start with 0, each page should be 8 items"""
     page_size = 8
-    page_start = 0 if page_num == 1 else (page_num - 1) * page_size
-
-    return (page_start, page_start + page_size)
+    if page_num == 1:
+        page_start = 0
+        return (page_start, page_size - 1)
+    else:
+        page_start = (page_num - 1) * page_size
+        return (page_start, page_start + page_size - 1)
 
 
 def get_body_from_event(event):
-    return json.loads(event["body"]) if "body" in event.keys() else None
+    try:
+        # check if we have an actuall body and return safely
+        if "body" in event.keys():
+            body = json.loads(event["body"])
+            return body
+        else:
+            return None
+    except AttributeError:
+        # we didn't get a valid aws event -> no dict provided
+        return None
 
 
 def get_filename_from_post(title):
