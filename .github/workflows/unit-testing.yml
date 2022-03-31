@@ -31,5 +31,4 @@ jobs:
 
       - name: Test with pytest
         run: |
-          pwd 
-          pytest -v
+          coverage run -m pytest && coverage report -m
