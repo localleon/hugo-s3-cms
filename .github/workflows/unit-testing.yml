@@ -26,8 +26,8 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          sudo apt install -y $(grep -o ^[^#][[:alnum:]-]* "packages.list")
           python3 -m pip install --upgrade pip
+          cat requirements.txt
           pip3 install -r requirements.txt
 
       - name: Test with pytest
