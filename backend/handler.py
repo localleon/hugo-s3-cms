@@ -5,13 +5,15 @@ import boto3
 import re
 import datetime
 import bleach
+from platformdirs import user_data_dir
 
 
 def main_handler(event, context):
-    # Prepare Execution
     print("Lambda function ARN:", context.invoked_function_arn)
-    print(event)
-    init_s3()
+    1(event)
+
+    # Prepare Execution
+    init_s3(event)
 
     # Extract Event/Context
     req_path = event["rawPath"]
@@ -27,24 +29,30 @@ def main_handler(event, context):
         return handler_delete_file(event)
 
 
-def init_s3():
+def init_s3(event):
     # Config Option -> migrate to env variables
-    global s3, bucket_name
+    global s3, bucket_name, user_dir
     bucket_name = "hugo-cms-store1"
     s3 = boto3.client("s3")
+
+    # We set the current user fold to the authenticated jwt token subject
+    user_dir = get_jwt_token_sub(event)
 
 
 def handler_get_file(event):
     """This handler returns the object for the given key"""
     try:
         key = event["pathParameters"]["key"]
-
-        # Get object with key as b64 encoded string and return it
-        resp = get_file_from_s3(key)
-        if resp[0] == 202:
-            return callback(202, {"body": resp[1]})
+        if valid_object_key(key):
+            # Get object with key as b64 encoded string and return it
+            resp = get_file_from_s3(key)
+            if resp[0] == 202:
+                return callback(202, {"body": resp[1]})
+            else:
+                return callback(404, None)
         else:
-            return callback(404, None)
+            # Prevent directory traversals by checking the key for delimiters
+            return callback(405, {"msg": "Illegal Delimiter found in object key."})
 
     except KeyError:
         return callback(
@@ -139,7 +147,8 @@ def delete_file_from_s3(key):
     if key not in list_objects_from_bucket():
         return (404, "Key was not found in bucket")
 
-    # trigger the s3 file operation
+    # add user_dir to key and trigger the s3 file operation
+    key = f"{user_dir}/{key}"
     s3_resp = s3.delete_object(Bucket=bucket_name, Key=key)
     http_status_code = s3_resp["ResponseMetadata"]["HTTPStatusCode"]
 
@@ -151,11 +160,19 @@ def delete_file_from_s3(key):
 
 
 def list_objects_from_bucket():
-    """Provides all markdown objects keys from the configured bucket"""
-    s3_resp = s3.list_objects_v2(Bucket=bucket_name, Delimiter="/")
-    if s3_resp["KeyCount"] != 0:
-        return [obj["Key"] for obj in s3_resp["Contents"] if ".md" in obj["Key"]]
-    else:
+    """Provides all markdown objects keys from user-specifiy-dir from the configured bucket"""
+    s3_resp = s3.list_objects_v2(
+        Bucket=bucket_name, Prefix=f"{user_dir}/", Delimiter="/"
+    )  # only request keys that belonge to the user
+
+    try:
+        keys = [obj["Key"] for obj in s3_resp["Contents"] if ".md" in obj["Key"]]
+        return [
+            k.replace(f"{user_dir}/", "") for k in keys
+        ]  # strip the user_dir from the keys, we don't want to show the user our internal dirs
+
+    except KeyError:
+        # triggers if we dont have any "contents" aka object keys in our request
         return []
 
 
@@ -194,7 +211,7 @@ def get_body_from_event(event):
 
 
 def get_filename_from_post(title):
-    """Converts the titel to a filename (cut length at 20),checks if we have safe characters in the path and adds a timestamp"""
+    """Converts the titel to a filename in the user-dir (cut length at 20),checks if we have safe characters in the path and adds a timestamp"""
     title = title.strip()
     safe_chars = re.compile(
         r"[a-zA-Z0-9\-\s.]*$"
@@ -202,7 +219,9 @@ def get_filename_from_post(title):
 
     if safe_chars.match(title):
         short_title = title.replace(" ", "_")[:20]
-        return f"{datetime.date.today().isoformat()}_{short_title}.md"
+
+        # add user_dir and timestamp infront of post
+        return f"{user_dir}/{datetime.date.today().isoformat()}_{short_title}.md"
     else:
         return None
 
@@ -249,6 +268,20 @@ def validate_post_json(params):
     return all(provided_keys) and all(param_lens)
 
 
+def valid_object_key(key):
+    """Checks for illegal characters in keys (Delimiters and so)"""
+    return "/" not in key
+
+
 def callback(status_code, body):
     """Creates a API Gateway compatible response message."""
     return {"statusCode": status_code, "body": json.dumps(body)}
+
+
+def get_jwt_token_sub(event):
+    """Gets the subject from the verfied jwt token -> user_id"""
+    try:
+        return event["requestContext"]["authorizer"]["jwt"]["claims"]["sub"]
+    except KeyError:
+        print("Error: AWS Event contains no subject in jwt token")
+        return
