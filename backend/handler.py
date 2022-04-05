@@ -72,7 +72,14 @@ def handler_delete_file(event):
         key = event["pathParameters"]["key"]
         # Call the delete s3 function if we got a valid request
         s3_resp = delete_file_from_s3(key)
-        return callback(s3_resp[0], s3_resp[1])
+
+        if s3_resp == 202:
+            return callback(202, {"msg": "Successfully deleted your file!"})
+        else:
+            return callback(
+                501, {"msg": "Internal server error while trying to delete your file"}
+            )
+
     except KeyError:
         return callback(
             401,
@@ -146,13 +153,7 @@ def delete_file_from_s3(key):
 
     # add user_dir to key and trigger the s3 file operation
     s3_resp = s3.delete_object(Bucket=bucket_name, Key=f"{user_dir}/{key}")
-    http_status_code = s3_resp["ResponseMetadata"]["HTTPStatusCode"]
-
-    # at successfull operations we return normally, else we provide the user with the s3 statuscode and response metadata for debugging
-    if http_status_code == 204:
-        return (202, f"Successfully delete object with key {key}")
-    else:
-        return (http_status_code, s3_resp["ResponseMetadata"])
+    return s3_resp["ResponseMetadata"]["HTTPStatusCode"]
 
 
 def list_objects_from_bucket():

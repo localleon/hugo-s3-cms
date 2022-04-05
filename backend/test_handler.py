@@ -2,7 +2,6 @@
 import handler
 import json
 from moto import mock_s3
-import boto3
 
 
 def load_sample_event(path):
@@ -112,7 +111,7 @@ def mock_s3_ressources():
         Bucket=handler.bucket_name,
         Key=f"{handler.user_dir}/ILLEGAL_FILE.txt",
     )
-    # put one illegal file
+    # put one not accessible file
     handler.s3.put_object(
         Body=data,
         Bucket=handler.bucket_name,
@@ -150,6 +149,18 @@ def test_check_correct_user_dir_permissions():
         objs = handler.list_objects_from_bucket()
 
         assert "ILLEGAL_FILE.txt" not in objs
+
+
+def test_get_file_from_s3():
+    with mock_s3():
+        mock_s3_ressources()
+
+        # Check if we can access our mock-files in user-dir
+        assert handler.get_file_from_s3("MockFile-1.md")
+        assert handler.get_file_from_s3("MockFile-49.md")
+        # Check if we can't reach outside our user dir and dont get anything else other than markdown files
+        assert handler.get_file_from_s3("ILLEGAL-Access.txt") is None
+        assert handler.get_file_from_s3("NOT_EXISTENT.md") is None
 
 
 def test_illegal_s3_keys_allowed():
