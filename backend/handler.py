@@ -2,23 +2,22 @@ import base64
 import json
 import io
 import boto3
+import botocore
 import re
 import datetime
 import bleach
-from platformdirs import user_data_dir
 
 
 def main_handler(event, context):
     print("Lambda function ARN:", context.invoked_function_arn)
-    1(event)
+    print(event)
 
-    # Prepare Execution
-    init_s3(event)
-
-    # Extract Event/Context
-    req_path = event["rawPath"]
+    # Prepare Execution and extract  Event/Context -> We set the current user fold to the authenticated jwt token subject
+    user_dir = get_jwt_token_sub(event)
+    init_s3(user_dir)
 
     # Routing inside the lambda function, we don't need multiple lambda functions for our api
+    req_path = event["rawPath"]
     if req_path == "/upload":
         return handler_upload_post(event)
     elif req_path == "/list":
@@ -28,31 +27,35 @@ def main_handler(event, context):
     elif req_path.startswith("/delete/"):
         return handler_delete_file(event)
 
+    # Catch all Error Handler
+    return callback(501, {"msg": "Internal Server Error"})
 
-def init_s3(event):
+
+def init_s3(user_context_dir):
+    # Setup S3 Connection and change to correct user directory
     # Config Option -> migrate to env variables
     global s3, bucket_name, user_dir
     bucket_name = "hugo-cms-store1"
     s3 = boto3.client("s3")
 
-    # We set the current user fold to the authenticated jwt token subject
-    user_dir = get_jwt_token_sub(event)
+    user_dir = user_context_dir
 
 
 def handler_get_file(event):
     """This handler returns the object for the given key"""
     try:
         key = event["pathParameters"]["key"]
-        if valid_object_key(key):
-            # Get object with key as b64 encoded string and return it
-            resp = get_file_from_s3(key)
-            if resp[0] == 202:
-                return callback(202, {"body": resp[1]})
-            else:
-                return callback(404, None)
+
+        # Check if the key is not using delimiters aka trying to get files outside user dir
+        if not valid_object_key(key):
+            return callback(405, {"msg": "Illegal Character found in object key."})
+
+        # Get object with key as b64 encoded string and return it
+        b64_file = get_file_from_s3(key)
+        if b64_file:
+            return callback(202, {"body": b64_file})
         else:
-            # Prevent directory traversals by checking the key for delimiters
-            return callback(405, {"msg": "Illegal Delimiter found in object key."})
+            return callback(404, None)
 
     except KeyError:
         return callback(
@@ -117,21 +120,16 @@ def handler_upload_post(event):
 
 def get_file_from_s3(key):
     """Get a file from key in our s3 object"""
-
-    # Check if the file really exists before deleting it
-    if key not in list_objects_from_bucket():
-        return (404, "Key was not found in bucket")
-
     # trigger the s3 file operation
     buf = io.BytesIO()
-    s3.download_fileobj(Bucket=bucket_name, Key=key, Fileobj=buf)
-    buf.seek(0)
 
-    # return the file as a base64 encoded string
-    return (
-        202,
-        encode_textfile_to_b64(file_bytes=buf.read()),
-    )
+    try:
+        s3.download_fileobj(Bucket=bucket_name, Key=f"{user_dir}/{key}", Fileobj=buf)
+        buf.seek(0)
+        # return the file as a base64 encoded string
+        return encode_textfile_to_b64(file_bytes=buf.read())
+    except botocore.exceptions.ClientError:
+        return None
 
 
 def encode_textfile_to_b64(file_bytes):
@@ -142,14 +140,12 @@ def encode_textfile_to_b64(file_bytes):
 
 def delete_file_from_s3(key):
     """Delete a file from key in our s3 object and form a correct http response"""
-
     # Check if the file really exists before deleting it
-    if key not in list_objects_from_bucket():
+    if key not in list_objects_from_bucket() and valid_object_key(key):
         return (404, "Key was not found in bucket")
 
     # add user_dir to key and trigger the s3 file operation
-    key = f"{user_dir}/{key}"
-    s3_resp = s3.delete_object(Bucket=bucket_name, Key=key)
+    s3_resp = s3.delete_object(Bucket=bucket_name, Key=f"{user_dir}/{key}")
     http_status_code = s3_resp["ResponseMetadata"]["HTTPStatusCode"]
 
     # at successfull operations we return normally, else we provide the user with the s3 statuscode and response metadata for debugging

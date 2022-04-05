@@ -55,6 +55,8 @@ def test_validate_post_json():
 
 def test_get_filename_from_post():
     """Check valid and invalide titles for correct filename parsing"""
+    handler.user_dir = "mocking-dir"
+
     valid_titles = ["Kuchen To-Go", "EinWortSpiel111"]
     invalid_titles = ["#HackingFest____!!!", "    !!!!    "]
 
@@ -88,7 +90,7 @@ def test_calc_paging_index():
 def mock_s3_ressources():
     """This methode emulates"""
     print("mocking s3 infra.....")
-    handler.init_s3()
+    handler.init_s3("mocking-dir")
 
     handler.s3.create_bucket(
         Bucket=handler.bucket_name,
@@ -102,13 +104,19 @@ def mock_s3_ressources():
         handler.s3.put_object(
             Body=data,
             Bucket=handler.bucket_name,
-            Key=filename,
+            Key=f"{handler.user_dir}/{filename}",
         )
     # put one illegal file
     handler.s3.put_object(
         Body=data,
         Bucket=handler.bucket_name,
-        Key="ILLEGAL_FILE.txt",
+        Key=f"{handler.user_dir}/ILLEGAL_FILE.txt",
+    )
+    # put one illegal file
+    handler.s3.put_object(
+        Body=data,
+        Bucket=handler.bucket_name,
+        Key="ILLEGAL-Access.txt",
     )
 
 
@@ -133,3 +141,21 @@ def test_list_objects_from_bucket():
 
         assert all(file_exists)
         assert "ILLEGAL_FILE.txt" not in objs
+
+
+def test_check_correct_user_dir_permissions():
+    """Mock_s3 and check if we cant access the file in the toplevel dir"""
+    with mock_s3():
+        mock_s3_ressources()
+        objs = handler.list_objects_from_bucket()
+
+        assert "ILLEGAL_FILE.txt" not in objs
+
+
+def test_illegal_s3_keys_allowed():
+    """Check if our handler doesn't provide access outside the user dir"""
+    with mock_s3():
+        mock_s3_ressources()
+
+        handler.get_file_from_s3("test")
+        assert handler.get_file_from_s3("../ILLEGAL_FILE.txt") is None
