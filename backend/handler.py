@@ -28,7 +28,7 @@ def main_handler(event, context):
         return handler_delete_file(event)
 
     # Catch all Error Handler
-    return callback(501, {"msg": "Internal Server Error"})
+    return callback(501, {"msg": "Internal Server Error while routing request"})
 
 
 def init_s3(user_context_dir):
@@ -257,12 +257,16 @@ def validate_post_json(params):
     """Tkes the body of the requests and checks if every valid parameter for an upload is filled in"""
     required_keys = ("title", "date", "author", "content")
 
-    # Check if all keys where provided
-    provided_keys = [keys in params for keys in required_keys]
-    # Check if the metadata and the post content have a valid length
-    param_lens = [len(x) > 1 for x in params.values()]
+    try:
+        # Check if all keys where provided
+        provided_keys = [keys in params for keys in required_keys]
+        # Check if the metadata and the post content have a valid length
+        param_lens = [len(x) > 1 for x in params.values()]
 
-    return all(provided_keys) and all(param_lens)
+        return all(provided_keys) and all(param_lens)
+    except TypeError:
+        # We didn't get an iterable body aka json
+        return False
 
 
 def valid_object_key(key):

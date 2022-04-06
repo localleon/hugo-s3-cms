@@ -71,9 +71,8 @@ const logout = () => {
 
 
 const updateUI = async () => {
-    // hide contents of the single-page-application to make the login feel more fluid
     const isAuthenticated = await auth0.isAuthenticated();
-    console.log(isAuthenticated)
+    // hide contents of the single-page-application to make the login feel more fluid
     setDisplayByID("btn-login", !isAuthenticated)
     setDisplayByID("btn-logout", isAuthenticated)
     setVisibilityByID("spa", isAuthenticated)
@@ -150,26 +149,45 @@ function b64DecodeUnicode(str) {
 // Post Submitting 
 
 function getPostContent() {
-    return {
+    let fields = {
         "title": document.getElementById('ftitle').value,
         "date": document.getElementById('fdate').value,
         "author": document.getElementById('fauthor').value,
         "content": document.getElementById('mdUserText').value
     }
+
+    // check if every form field is filled
+    let allFilled = Object.values(fields).filter(e => e.length >= 1);
+
+    if (allFilled.length == 4) {
+        return fields
+    } else {
+        // return nothing (undefined)
+        return
+    }
 }
 
 function submitPost() {
-    // Construct json object from form 
     let post = getPostContent()
 
-    let url = apiUrl + "upload"
+    // Abort Condition if some post fields are not filled
+    if (!post) {
+        Swal.fire({
+            title: 'Felder fehlen! ',
+            text: "Nicht alle Felder wurden ausgefüllt! Bitte fülle alle Felder aus.",
+            icon: "error",
+        });
+        return
+    }
+
     // Upload post via Rest-Api 
+    let url = apiUrl + "upload"
     postData(url, post).then(response => {
-        if (response.status != 400) {
+        if (response.status == 200) {
             response.json().then(data => {
                 Swal.fire({
                     title: 'Post erstellt.',
-                    text: data['msg'],
+                    text: "Der Post wurde erfolgreich in das Backend hochgeladen",
                     icon: "success",
                 });
                 // Refresh view
@@ -181,14 +199,14 @@ function submitPost() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Etwas ist schiefgelaufen :-(',
-                    text: data['msg'],
+                    text: "Der Server hat einen unerwartete Antwort gesendet",
                 });
             })
         }
     }).catch((error) => {
         Swal.fire({
             title: 'Post erstellt.',
-            text: "Ein Error ist mit der API aufgetreten." + error,
+            text: "Ein Error ist mit der Netzwerkverbindung aufgetreten." + error,
             icon: "error",
         });
     });
@@ -228,6 +246,7 @@ function constructObject(key) {
     let divC1 = document.createElement("div")
     divC1.setAttribute("class", "column")
     let p = document.createElement("p")
+    p.setAttribute("class", "objectTitle")
     p.innerHTML = key
     divC1.appendChild(p)
 
@@ -379,7 +398,7 @@ async function getObject(key) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer'
     });
-    return await response.json();
+    return response.json();
 }
 
 async function getObjects(pageNum) {
@@ -399,7 +418,7 @@ async function getObjects(pageNum) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer',
     });
-    return await response.json();
+    return response.json();
 }
 
 async function deletePost(key) {
@@ -417,7 +436,7 @@ async function deletePost(key) {
         redirect: 'follow',
         referrerPolicy: 'no-referrer'
     });
-    return await response.json();
+    return response.json();
 }
 
 async function postData(url = '', data = {}) {
