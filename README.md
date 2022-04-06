@@ -8,7 +8,6 @@ hugo-s3-cms is a simple CMS for uploading markdown files into an Object Storage.
   - JS 
   - Python
   - HTML / CSS
-- Unit-Tests 
 - Erweiterungsmöglichkeiten
   - WYSIWYG Editor einfügen
 - UX 

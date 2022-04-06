@@ -162,7 +162,7 @@ function getPostContent() {
     if (allFilled.length == 4) {
         return fields
     } else {
-        // return nothing (undefined)
+        // we dont have any post content
         return
     }
 }
@@ -184,7 +184,7 @@ function submitPost() {
     let url = apiUrl + "upload"
     postData(url, post).then(response => {
         if (response.status == 200) {
-            response.json().then(data => {
+            response.json().then(_data => {
                 Swal.fire({
                     title: 'Post erstellt.',
                     text: "Der Post wurde erfolgreich in das Backend hochgeladen",
@@ -207,7 +207,7 @@ function submitPost() {
                 setTimeout(pagedObjectPreview, refreshDelay);
             })
         } else {
-            response.json().then(data => {
+            response.json().then(_data => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Etwas ist schiefgelaufen :-(',
@@ -453,7 +453,7 @@ async function deletePost(key) {
 
 async function postData(url = '', data = {}) {
     // The response of the 
-    const response = await fetch(url, {
+    return fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE
         mode: 'cors',
         cache: 'no-cache',
@@ -466,5 +466,4 @@ async function postData(url = '', data = {}) {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
     });
-    return response;
 }

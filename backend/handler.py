@@ -73,8 +73,10 @@ def handler_delete_file(event):
         # Call the delete s3 function if we got a valid request
         s3_resp = delete_file_from_s3(key)
 
-        if s3_resp == 202:
+        if s3_resp == 204:
             return callback(202, {"msg": "Successfully deleted your file!"})
+        elif s3_resp == 404:
+            return callback(404, {"msg": "Key not found or illegal key!"})
         else:
             return callback(
                 501, {"msg": "Internal server error while trying to delete your file"}
@@ -147,9 +149,9 @@ def encode_textfile_to_b64(file_bytes):
 
 def delete_file_from_s3(key):
     """Delete a file from key in our s3 object and form a correct http response"""
-    # Check if the file really exists before deleting it
-    if key not in list_objects_from_bucket() and valid_object_key(key):
-        return (404, "Key was not found in bucket")
+    # Check if the key is valid and if key exists
+    if not valid_object_key(key) or key not in list_objects_from_bucket():
+        return 404
 
     # add user_dir to key and trigger the s3 file operation
     s3_resp = s3.delete_object(Bucket=bucket_name, Key=f"{user_dir}/{key}")
