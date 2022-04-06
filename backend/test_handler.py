@@ -80,7 +80,7 @@ def test_get_body_from_event():
 def test_calc_paging_index():
     """Test paging function for correctly calculated indexes"""
     # Correct pagging results for the first 3 pages
-    page_tests = [(1, (0, 7)), (2, (8, 15)), (3, (16, 23)), (99, (784, 791))]
+    page_tests = [(1, (0, 8)), (2, (8, 16)), (3, (16, 24)), (99, (784, 792))]
 
     assert all([handler.calc_paging_index(test[0]) == test[1] for test in page_tests])
 
@@ -123,9 +123,10 @@ def test_list_objects_from_bucket_paged_size_only():
     """Check if only 8 Items are returned per s3 obejct page"""
     with mock_s3():
         mock_s3_ressources()
+
         # Test first five pages for the correct size of items
         pages = [
-            len(handler.list_objects_from_bucket_paged(p)) <= 8 for p in range(1, 5)
+            len(handler.list_objects_from_bucket_paged(p)) == 8 for p in range(1, 2)
         ]
         assert all(pages)
 

@@ -194,6 +194,18 @@ function submitPost() {
                 clearPostFields();
                 setTimeout(pagedObjectPreview, refreshDelay);
             })
+
+        } else if (response.status == 400) {
+            response.json().then(data => {
+                Swal.fire({
+                    title: 'Post erstellt.',
+                    text: data['msg'],
+                    icon: "success",
+                });
+                // Refresh view
+                clearPostFields();
+                setTimeout(pagedObjectPreview, refreshDelay);
+            })
         } else {
             response.json().then(data => {
                 Swal.fire({

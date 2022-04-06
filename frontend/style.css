@@ -83,7 +83,7 @@ h1 {
     border: 0.1em lightslategrey solid;
 
     /* Limits for scaling of text boxes  */
-    max-height: 50em;
+    max-height: 30em;
 }
 
 #mdUserText:hover {
@@ -96,10 +96,11 @@ h1 {
     min-height: 10em;
     padding: 0.2em;
     /* Limits for scaling of text boxes  */
-     max-height: 50em;
+     max-height: 30em;
+     overflow-y: scroll;
 }
 
-#preview:hover {
+.preview:hover {
     border: 0.2rem solid #9b4dca
 }
 

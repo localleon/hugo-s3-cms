@@ -188,10 +188,10 @@ def calc_paging_index(page_num):
     page_size = 8
     if page_num == 1:
         page_start = 0
-        return (page_start, page_size - 1)
+        return (page_start, page_size)
     else:
         page_start = (page_num - 1) * page_size
-        return (page_start, page_start + page_size - 1)
+        return (page_start, page_start + page_size)
 
 
 def get_body_from_event(event):
