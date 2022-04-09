@@ -5,8 +5,7 @@
     <meta charset="utf-8" />
     <title>hugo-s3-cms</title>
 
-
-
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <!-- Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
     <!-- CSS Reset -->
@@ -24,31 +23,27 @@
             <ul>
                 <li id="btn-logout" onclick="logout()">Logout</li>
                 <li id="btn-login" onclick="login()">Login</li>
+                <img id="navbar-logo" src="images/hugo_s3_logo_small.png" alt="">
                 <p id="heading">hugo-s3-cms</p>
             </ul>
         </div>
 
         <!-- Site content -->
         <div class="container">
-            <div class="auth func-section">
-                <p>Dies ist die Startseite des Content-Managment Systems! Hier lassen sich Posts erstellen, anzeigen und
-                    löschen. </p>
-                <p id="login-text">Um fortzufahren melde dich doch bitte an!</p>
-
+            <div id="login-text">
+                <img id="header-logo" src="images/hugo_s3_logo.png" alt="">
+                <p>Willkommen auf der Startseite des Hugo-S3-CMS Systems. Melde dich über den Login-Button
+                    in der Navigationsleiste an um fortzufahren!</p>
             </div>
 
             <div id="spa">
                 <div class="func-section">
                     <h2>Post schreiben:</h2>
                     <p class="description">
-                        Mithilfe diese Formulares lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
-                        ausgefüllt sein.
-                        Über den Submit-Button werden die Posts hochgeladen.
-                        Ein Post kann geändert werden indem ein Post mit dem gleichen Namen erstellt wird. Dies
-                        funktioniert
-                        jedoch nur
-                        am gleichen Tag. Innerhalb des Textfeldes kann mit <a target="_blank" rel="noopener"
-                            href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden
+                        Mithilfe dieses Formular lässt sich ein Post in das Backend hochladen. Dazu müssen alle Felder
+                        ausgefüllt sein. Über den Submit-Button werden die Posts hochgeladen. Innerhalb des Textfeldes
+                        kann mit <a target="_blank" rel="noopener"
+                            href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden.
                     </p>
 
                     <!-- Formular for metadata upload-->
@@ -62,7 +57,7 @@
                             <input type="date" id="fdate" name="date">
                         </div>
                         <div class="column">
-                            <label for="fauthor">Author:</label>
+                            <label for="fauthor">Autor:</label>
                             <input type="text" id="fauthor" name="author">
                         </div>
                     </div>
@@ -111,11 +106,9 @@
             </div>
         </div>
 
-
-
-
         <!-- Markdown Preview and HTML Sanitizer-->
-        <script src="https://cdn.jsdelivr.net/npm/marked@4.0.12/marked.min.js" integrity="sha256-tgAXzjV6GfkdWH2L7rks8tkOueaO8xV5hZSgKoAiO7o=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked@4.0.12/marked.min.js"
+            integrity="sha256-tgAXzjV6GfkdWH2L7rks8tkOueaO8xV5hZSgKoAiO7o=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.6/dist/purify.min.js"
             integrity="sha256-u729SS+rZJlPJbWgPeuX/57zEYMrpmb3EdiMug5IYNQ=" crossorigin="anonymous"></script>
         <!-- Auth0 SDK-->

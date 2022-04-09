@@ -76,7 +76,7 @@ const updateUI = async () => {
     setDisplayByID("btn-login", !isAuthenticated)
     setDisplayByID("btn-logout", isAuthenticated)
     setVisibilityByID("spa", isAuthenticated)
-    setVisibilityByID("login-text", !isAuthenticated)
+    setDisplayByID("login-text", !isAuthenticated)
 };
 
 function setDisplayByID(id, boolean) {

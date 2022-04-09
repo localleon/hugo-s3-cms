@@ -40,7 +40,22 @@
     margin-bottom: 0;
 }
 
+#navbar-logo {
+    float: left;
+    display: block;
+    padding-top: 0.5em;
+    margin-left: 0.5em;
+    width: 2.4em;
+}
+
 /* Texts and general stuff */
+#login-text {
+    padding-top: 3em;
+    text-align: center;
+    font-size: 2em;
+    display: block;
+}
+
 .container {
     padding: 3em;
 }
@@ -96,8 +111,8 @@ h1 {
     min-height: 10em;
     padding: 0.2em;
     /* Limits for scaling of text boxes  */
-     max-height: 30em;
-     overflow-y: scroll;
+    max-height: 30em;
+    overflow-y: scroll;
 }
 
 .preview:hover {
