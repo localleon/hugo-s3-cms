@@ -268,7 +268,7 @@ function constructObject(key) {
 
     // Get Button
     let imgG = document.createElement("img")
-    imgG.src = "images/icons/view.png"
+    imgG.src = "images/icons/view.webp"
     imgG.alt = "Download"
     imgG.setAttribute("class", "icon")
 
@@ -276,7 +276,7 @@ function constructObject(key) {
 
     // Delete Button
     let imgD = document.createElement("img")
-    imgD.src = "images/icons/delete.png"
+    imgD.src = "images/icons/delete.webp"
     imgD.alt = "Delete"
     imgD.setAttribute("class", "icon")
     imgD.setAttribute("onclick", "deletePostPrompt('" + key + "')")

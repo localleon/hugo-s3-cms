@@ -1,4 +1,4 @@
-/* Header */
+/* Header and navbar */
 
 .navbar {
     border-bottom: 1px lightslategrey solid;
@@ -46,7 +46,9 @@
     padding-top: 0.5em;
     margin-left: 0.5em;
     width: 2.4em;
+    height: auto;
 }
+
 
 /* Texts and general stuff */
 #login-text {
@@ -96,7 +98,6 @@ h1 {
     height: 10em;
     width: 30em;
     border: 0.1em lightslategrey solid;
-
     /* Limits for scaling of text boxes  */
     max-height: 30em;
 }
@@ -107,7 +108,6 @@ h1 {
 
 .preview {
     border: 0.1em lightslategrey solid;
-
     min-height: 10em;
     padding: 0.2em;
     /* Limits for scaling of text boxes  */
@@ -144,7 +144,6 @@ h1 {
 }
 
 /* Pagination  */
-
 #pageNumCounter {
     max-width: 7em;
 }

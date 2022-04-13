@@ -3,11 +3,15 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
+    <meta name="description"
+        content="hugo-s3-cms bietet einen simple Oberfläche zum editieren und veröffentlichen von Events und Blog-Posts auf deinen Websites">
     <title>hugo-s3-cms</title>
 
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <!-- Google Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic&display=swap" defer>
     <!-- CSS Reset -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
     <!-- Milligram CSS -->
@@ -23,7 +27,7 @@
             <ul>
                 <li id="btn-logout" onclick="logout()">Logout</li>
                 <li id="btn-login" onclick="login()">Login</li>
-                <img id="navbar-logo" src="images/hugo_s3_logo_small.png" alt="">
+                <img id="navbar-logo" src="images/hugo_s3_logo_small.webp" alt="">
                 <p id="heading">hugo-s3-cms</p>
             </ul>
         </div>
@@ -31,7 +35,7 @@
         <!-- Site content -->
         <div class="container">
             <div id="login-text">
-                <img id="header-logo" src="images/hugo_s3_logo.png" alt="">
+                <img id="header-logo" src="images/hugo_s3_logo.webp" alt="">
                 <p>Willkommen auf der Startseite des Hugo-S3-CMS Systems. Melde dich über den Login-Button
                     in der Navigationsleiste an um fortzufahren!</p>
             </div>
@@ -114,11 +118,13 @@
         <!-- Auth0 SDK-->
         <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"
             integrity="sha512-I3xjWOcpBPlEX9u3nRtqY2P6H8j7zqVUIXGs7B1vmNSSrkPeFGPoCwVh9NQ09tRC+FjNobpUJupBj5IBcCgQUw=="
-            crossorigin="anonymous"></script> <!-- Alert Styling-->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.7/dist/sweetalert2.all.min.js"
-            integrity="sha256-eTz92F43Upy5TN7f6frMgWI4eQgs0XEL7zBu8A8k7tk=" crossorigin="anonymous"></script>
+            crossorigin="anonymous"></script>
         <!-- Application Logic -->
         <script src="scripts/main.js"></script>
+        <!-- Alert Styling-->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.7/dist/sweetalert2.all.min.js"
+            integrity="sha256-eTz92F43Upy5TN7f6frMgWI4eQgs0XEL7zBu8A8k7tk=" crossorigin="anonymous"></script>
+
     </main>
 </body>
 
