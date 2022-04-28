@@ -79,7 +79,7 @@ const updateUI = async () => {
     // hide contents of the single-page-application to make the login feel more fluid
     setDisplayByID("btn-login", !isAuthenticated)
     setDisplayByID("btn-logout", isAuthenticated)
-    setVisibilityByID("spa", isAuthenticated)
+    setDisplayByID("spa", isAuthenticated)
     setDisplayByID("login-text", !isAuthenticated)
 };
 
@@ -304,7 +304,6 @@ function constructObject(key) {
 
 function previewObjects(objectKeys) {
     // Reset preview of objects
-    document.getElementById('getPreview').innerHTML = null;
     let list = document.getElementById('objectList');
     list.innerHTML = null;
 

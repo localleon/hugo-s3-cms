@@ -22,7 +22,7 @@
 
 <body>
     <main class="wrapper">
-
+        <!-- Navbar for displaying login/logout buttons and logo -->
         <div class='navbar'>
             <ul>
                 <li id="btn-logout" onclick="logout()">Logout</li>
@@ -41,72 +41,100 @@
             </div>
 
             <div id="spa">
-                <div class="func-section">
+                <div class="desc-section">
+                    <h2>Informationen:</h2>
+                    <p class="description">
+                        Willkommen im autorisierten Zustand des hugo-s3-cms. Mit diesem System können Sie einen Post
+                        für ihre gehostete Webseite erstellen. Ihr individuell erstellter User ermöglicht das Verwalten
+                        von allen ihrer Posts. Nach dem Einloggen in die Applikation ist ihre User für einen bestimmten
+                        Zeitraum auch nach Schließen der Seite verfügbar. Über den Logout-Knopf können Sie ihre Session
+                        beenden. Diese Oberfläche unterstützt das hochladen, löschen und anzeigen der
+                        Posts. Weitere Informationen entnehmen Sie bitte der beigelegten Produktdokumentation
+                        (Projektbericht).
+                    </p>
                     <h2>Post schreiben:</h2>
                     <p class="description">
-                        Mithilfe dieses Formular kannst du einen Post in das Backend hochladen. Dazu müssen alle Felder
+                        Mithilfe dieses Formular können sie einen Post in das Backend hochladen. Dazu müssen alle Felder
                         ausgefüllt sein. Über den Submit-Button werden die Posts hochgeladen. Innerhalb des Textfeldes
                         kann mit <a target="_blank" rel="noopener"
                             href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden.
                     </p>
-
-                    <!-- Formular for metadata upload-->
-                    <div class="row metadata">
-                        <div class="column">
-                            <label for="ftitle">Titel:</label>
-                            <input type="text" id="ftitle" name="title">
-                        </div>
-                        <div class="column">
-                            <label for="fdate">Datum:</label>
-                            <input type="date" id="fdate" name="date">
-                        </div>
-                        <div class="column">
-                            <label for="fauthor">Autor:</label>
-                            <input type="text" id="fauthor" name="author">
-                        </div>
-                    </div>
-
-                    <!-- Form for markdown writing and preview-->
-                    <div class="row" id="writing">
-                        <div class="column">
-                            <label>Post-Text schreiben:</label>
-                            <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
-                            <button id="bsubmit" onclick="submitPost()">Submit</button>
-                        </div>
-                        <div class="column">
-                            <label>Markdown-Preview</label>
-                            <div class="preview" id="preview"></div>
-
-                        </div>
-                    </div>
-                    <!-- Post Upload END-->
                 </div>
 
                 <div class="func-section">
+
+
+                    <div id="post-writing">
+                        <!-- Formular for metadata upload-->
+                        <div class="row" id="metadata">
+                            <div class="column">
+                                <label for="ftitle">Titel:</label>
+                                <input type="text" id="ftitle" name="title">
+                            </div>
+                            <div class="column">
+                                <label for="fdate">Datum:</label>
+                                <input type="date" id="fdate" name="date">
+                            </div>
+                            <div class="column">
+                                <label for="fauthor">Autor:</label>
+                                <input type="text" id="fauthor" name="author">
+                            </div>
+                        </div>
+
+                        <!-- Form for markdown writing and preview-->
+                        <div class="row" id="writing">
+                            <div class="column">
+                                <label>Post-Text schreiben:</label>
+                                <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
+                                <button id="bsubmit" onclick="submitPost()">Submit</button>
+                            </div>
+                            <div class="column">
+                                <label>Markdown-Preview</label>
+                                <div class="preview" id="preview"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="desc-section">
                     <h2>Posts anzeigen/löschen:</h2>
                     <p class="description">
                         Hier kannst du dir alle Post-Dateien anzeigen lassen, die in das CMS hochgeladen wurden.
                         Dir werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
                     </p>
-                    <!-- JS generated objects to display which objects currently are stored-->
-                    <div id="objectList">
-                    </div>
+                </div>
 
-                    <!-- Pagination Implentation-->
-                    <p>Nächste/Vorherige Seite:</p>
-                    <div class="pagination row">
-                        <button id="btn-pageDown" disabled="true" onClick="pageDown()">❮</button>
-                        <p id="pageNumCounter">1</p>
-                        <button id="btn-pageUp" onClick="pageUp()">❯</button>
-                        <button class="button-outline" id="listObjects" onclick="pagedObjectPreview()">Refresh
-                            Objects</button>
-                    </div>
+                <div class="func-section">
+                    <div id="post-objects">
+                        <!-- JS generated objects to display which objects currently are stored-->
+                        <div id="objectList">
+                        </div>
 
-                    <!-- Preview oft the getObjects()-->
-                    <div class="row">
-                        <div id="getPreview"></div>
+                        <!-- Pagination Implentation-->
+                        <p id="pagination-heading">Nächste/Vorherige Seite:</p>
+                        <div class="pagination row">
+                            <button id="btn-pageDown" disabled="true" onClick="pageDown()">❮</button>
+                            <p id="pageNumCounter">1</p>
+                            <button id="btn-pageUp" onClick="pageUp()">❯</button>
+                            <button class="button-outline" id="listObjects" onclick="pagedObjectPreview()">Refresh
+                                Objects</button>
+                        </div>
                     </div>
                 </div>
+                <!-- Preview oft the getObjects()-->
+                <div class="row">
+                    <div class="preview" id="getPreview">
+                        Wähle einen der oberen Posts über das Auge aus um eine Vorschau des hochgeladenen Posts zu
+                        erhalten!
+                    </div>
+                </div>
+
+                <div class="row footer">
+                    <p>Author: Leon Rauschenbach (2022)</p>
+                    <p><a href="mailto:hege@example.com">web@lrau.xyz</a></p>
+                </div>
+
             </div>
         </div>
 
