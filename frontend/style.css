@@ -116,7 +116,6 @@ h2 {
 
 #mdUserText {
     height: 20em;
-    width: 30em;
     resize: none;
     border: 0.1em lightslategrey solid;
     /* Limits for scaling of text boxes  */
@@ -128,7 +127,6 @@ h2 {
 
 .preview {
     border: 0.1em lightslategrey solid;
-    min-height: 10em;
     padding: 0.8em;
     /* Limits for scaling of text boxes  */
     height: 20em;
