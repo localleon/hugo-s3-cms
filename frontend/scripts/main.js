@@ -17,9 +17,11 @@ window.onload = async () => {
     if (isAuthenticated) {
         // show the gated content
         token = await auth0.getTokenSilently();
-        updateUI()
 
+        // update ui elements for startup
+        updateUI()
         pagedObjectPreview()
+        setDefaultDateForPost()
 
         return;
     }
@@ -35,8 +37,10 @@ window.onload = async () => {
         // Use replaceState to redirect the user away and remove the querystring parameters
         window.history.replaceState({}, document.title, "/");
 
-        // Load List Objects 
+        // Load List Objects and update ui
+        updateUI()
         pagedObjectPreview()
+        setDefaultDateForPost()
     }
 };
 
@@ -235,6 +239,12 @@ function clearPostFields() {
 
 
 // Object Preview
+
+function setDefaultDateForPost() {
+    // Safari handles date input forms different then firefox. We need to set a date here on startup
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById("fdate").value = today;
+}
 
 function constructObjectRow(child1, child2) {
     // check if the provided vars are actual objects

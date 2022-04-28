@@ -58,6 +58,10 @@
     display: block;
 }
 
+#header-logo {
+    width: 40%;
+}
+
 .container {
     padding: 3em;
 }
