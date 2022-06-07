@@ -9,13 +9,11 @@ var pageCounter = 1;
 
 // initalize the application
 window.onload = async () => {
-
     // setup auth0
     await configureClient();
     const isAuthenticated = await auth0.isAuthenticated();
 
     if (isAuthenticated) {
-        // show the gated content
         token = await auth0.getTokenSilently();
 
         // update ui elements for startup
@@ -27,6 +25,7 @@ window.onload = async () => {
     }
     // check for the code and state parameters
     const query = window.location.search;
+
     if (query.includes("code=") && query.includes("state=")) {
 
         // Process the login state
@@ -43,36 +42,6 @@ window.onload = async () => {
         setDefaultDateForPost()
     }
 };
-
-// Auth Stuff
-
-const fetchAuthConfig = () => fetch("/auth_config.json");
-
-const configureClient = async () => {
-    // Get Auth Configuration Parameters from client
-    const response = await fetchAuthConfig();
-    const config = await response.json();
-
-    auth0 = await createAuth0Client({
-        domain: config.domain,
-        client_id: config.clientId,
-        audience: config.audience,   // audience value for api access
-        scope: 'openid profile email'
-    });
-};
-
-const login = async () => {
-    await auth0.loginWithRedirect({
-        redirect_uri: window.location.origin
-    });
-};
-
-const logout = () => {
-    auth0.logout({
-        returnTo: window.location.origin
-    });
-};
-
 
 const updateUI = async () => {
     const isAuthenticated = await auth0.isAuthenticated();
@@ -104,7 +73,6 @@ function setVisibilityByID(id, boolean) {
 
 
 // Markdown Preview Stuff 
-
 function isTyping() {
     // Automatic Markdown-Preview when the user is tpying 
     clearTimeout(timer);
@@ -171,7 +139,8 @@ function getPostContent() {
     }
 }
 
-function submitPost() {
+function createPostFromUi() {
+    // Creates a post object from ui data and submits it to the backend via createPost()
     let post = getPostContent()
 
     // Abort Condition if some post fields are not filled
@@ -183,10 +152,12 @@ function submitPost() {
         });
         return
     }
+    createPost(post)
+}
 
-    // Upload post via Rest-Api 
-    let url = apiUrl + "upload"
-    postData(url, post).then(response => {
+function createPost(postObject) {
+    // Creates a post in the backend via the api
+    postData(apiUrl + "upload", post).then(response => {
         if (response.status == 200) {
             response.json().then(_data => {
                 Swal.fire({
@@ -202,26 +173,18 @@ function submitPost() {
         } else if (response.status == 400) {
             response.json().then(data => {
                 Swal.fire({
-                    title: 'Post erstellt.',
+                    title: 'Fehlermeldung',
                     text: data['msg'],
-                    icon: "success",
+                    icon: "question",
                 });
                 // Refresh view
                 clearPostFields();
                 setTimeout(pagedObjectPreview, refreshDelay);
             })
-        } else {
-            response.json().then(_data => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Etwas ist schiefgelaufen :-(',
-                    text: "Der Server hat einen unerwartete Antwort gesendet",
-                });
-            })
         }
     }).catch((error) => {
         Swal.fire({
-            title: 'Post erstellt.',
+            title: 'Etwas ist schiefgelaufen :-(',
             text: "Ein Error ist mit der Netzwerkverbindung aufgetreten." + error,
             icon: "error",
         });
@@ -237,9 +200,7 @@ function clearPostFields() {
     document.getElementById('mdUserText').value = ""
 }
 
-
 // Object Preview
-
 function setDefaultDateForPost() {
     // Safari handles date input forms different then firefox. We need to set a date here on startup
     var today = new Date().toISOString().split('T')[0];
@@ -381,9 +342,7 @@ function getObjectKeysForCurrentPage() {
     })
 }
 
-
 // Delete Functionallity
-
 function deletePostPrompt(key) {
     // Confirm if the user really wants to delete the item
     Swal.fire({
@@ -400,79 +359,4 @@ function deletePostPrompt(key) {
             setTimeout(pagedObjectPreview, refreshDelay)
         }
     })
-}
-
-
-// HTTP-API Functions
-async function getObject(key) {
-    let url = apiUrl + "get/" + key
-
-    const response = await fetch(url, {
-        method: 'GET', // *GET, POST, PUT, DELETE
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'omit',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer'
-    });
-    return response.json();
-}
-
-async function getObjects(pageNum) {
-    let url = apiUrl + "list?" + new URLSearchParams({
-        page: pageNum
-    })
-
-    const response = await fetch(url, {
-        method: 'GET', // *GET, POST, PUT, DELETE
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'omit',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-    });
-    return response.json();
-}
-
-async function deletePost(key) {
-    let url = apiUrl + "delete/" + key
-
-    const response = await fetch(url, {
-        method: 'DELETE', // *GET, POST, PUT, DELETE
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'omit',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer'
-    });
-    return response.json();
-}
-
-async function postData(url = '', data = {}) {
-    // The response of the 
-    return fetch(url, {
-        method: 'POST', // *GET, POST, PUT, DELETE
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'omit',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: JSON.stringify(data)
-    });
 }
