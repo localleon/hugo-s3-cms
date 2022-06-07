@@ -1,5 +1,7 @@
 // Auth Stuff
 const fetchAuthConfig = () => fetch("/auth_config.json");
+var auth0 = null;
+var token = null;
 
 const configureClient = async () => {
     // Get Auth Configuration Parameters from client

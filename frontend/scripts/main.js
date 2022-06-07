@@ -1,11 +1,9 @@
 // Global Consts and init stuff
 const apiUrl = "https://85tpt5asaa.execute-api.eu-central-1.amazonaws.com/"
-var delay = 1000; // that's 1 seconds of not typing
+const delay = 1000; // that's 1 second of not typing
+const refreshDelay = 4000;
+const pageCounter = 1;
 var timer = null;
-var auth0 = null;
-var token = null;
-var refreshDelay = 4000;
-var pageCounter = 1;
 
 // initalize the application
 window.onload = async () => {
@@ -53,7 +51,7 @@ const updateUI = async () => {
 };
 
 function setDisplayByID(id, boolean) {
-    var elm = document.getElementById(id)
+    let elm = document.getElementById(id)
     if (boolean) {
         elm.style.display = "block";
     } else {
@@ -62,7 +60,7 @@ function setDisplayByID(id, boolean) {
 }
 
 function setVisibilityByID(id, boolean) {
-    var elm = document.getElementById(id)
+    let elm = document.getElementById(id)
 
     if (boolean) {
         elm.style.visibility = "visible"
@@ -157,7 +155,7 @@ function createPostFromUi() {
 
 function createPost(postObject) {
     // Creates a post in the backend via the api
-    postData(apiUrl + "upload", post).then(response => {
+    postData(apiUrl + "upload", postObject).then(response => {
         if (response.status == 200) {
             response.json().then(_data => {
                 Swal.fire({
@@ -193,7 +191,7 @@ function createPost(postObject) {
 
 function clearPostFields() {
     // Clear all fields for a fresh start
-    document.getElementById('preview').innerHTML = null
+    document.getElementById('getPreview').innerHTML = null
     document.getElementById('ftitle').value = ""
     document.getElementById('fdate').value = ""
     document.getElementById('fauthor').value = ""
@@ -203,7 +201,7 @@ function clearPostFields() {
 // Object Preview
 function setDefaultDateForPost() {
     // Safari handles date input forms different then firefox. We need to set a date here on startup
-    var today = new Date().toISOString().split('T')[0];
+    let today = new Date().toISOString().split('T')[0];
     document.getElementById("fdate").value = today;
 }
 
@@ -278,7 +276,7 @@ function previewObjects(objectKeys) {
     }
 
     // Construct HTML Objects to display object keys
-    for (var i = 0; i < objectKeys.length; i += 2) {
+    for (let i = 0; i < objectKeys.length; i += 2) {
 
         // Check if we have file objects and then create a control html element for them
         let div = document.createElement("div")
