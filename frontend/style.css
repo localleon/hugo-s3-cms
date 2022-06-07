@@ -90,7 +90,27 @@ h2 {
 }
 
 #header-logo {
-  width: 40%;
+  width: 35%;
+  animation-duration: 30s;
+  animation-name: logo-size;
+}
+
+@keyframes logo-size {
+  0% {
+    transform: rotate(15deg);
+  }
+  25% {
+    transform: rotate(-25deg);
+  }
+  50% {
+    transform: rotate(30deg);
+  }
+  75% {
+    transform: rotate(-30deg);
+  }
+  100% {
+    transform: rotate(10deg);
+  }
 }
 
 #login-text {

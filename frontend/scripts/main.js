@@ -2,7 +2,7 @@
 const apiUrl = "https://85tpt5asaa.execute-api.eu-central-1.amazonaws.com/";
 const delay = 1000; // that's 1 second of not typing
 const refreshDelay = 4000;
-const pageCounter = 1;
+var pageCounter = 1;
 var timer = null;
 
 // initalize the application
@@ -131,9 +131,6 @@ function getPostContent() {
 
   if (allFilled.length == 4) {
     return fields;
-  } else {
-    // we dont have any post content
-    return;
   }
 }
 
@@ -164,9 +161,6 @@ function createPost(postObject) {
             text: "Der Post wurde erfolgreich in das Backend hochgeladen",
             icon: "success",
           });
-          // Refresh view
-          clearPostFields();
-          setTimeout(pagedObjectPreview, refreshDelay);
         });
       } else if (response.status == 400) {
         response.json().then((data) => {
@@ -175,10 +169,11 @@ function createPost(postObject) {
             text: data["msg"],
             icon: "question",
           });
-          // Refresh view
-          clearPostFields();
-          setTimeout(pagedObjectPreview, refreshDelay);
         });
+
+        // Refresh view
+        clearPostFields();
+        setTimeout(pagedObjectPreview, refreshDelay);
       }
     })
     .catch((error) => {
