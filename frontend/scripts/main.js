@@ -94,7 +94,7 @@ function preview() {
     });
 
     // Preview in box
-    document.getElementById('preview').innerHTML = marked.parse(clean);
+    document.getElementById('createPreview').innerHTML = marked.parse(clean);
 }
 
 

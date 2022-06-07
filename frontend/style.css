@@ -131,11 +131,27 @@ h2 {
     /* Limits for scaling of text boxes  */
     height: 20em;
     overflow-y: scroll;
+    overflow-wrap: break-word;
 }
 
 .preview:hover {
     border: 0.2rem solid #9b4dca;
 }
+
+#createPreview {
+    width: 22.5em;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+
+#getPreview {
+    border: solid black 1px;
+    width: 80%;
+    margin: 1em auto 0 auto;
+}
+
+
 
 /* List Posts Objects */
 #post-objects {
@@ -163,12 +179,6 @@ h2 {
 .icon:hover {
     background-color: #9b4dca;
     transition: 0.3s;
-}
-
-#getPreview {
-    border: solid black 1px;
-    width: 80%;
-    margin: 1em auto 0 auto;
 }
 
 /* Pagination  */
