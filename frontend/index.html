@@ -1,154 +1,199 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width">
-    <meta name="description"
-        content="hugo-s3-cms bietet einen simple Oberfläche zum editieren und veröffentlichen von Events und Blog-Posts auf deinen Websites">
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="hugo-s3-cms bietet einen simple Oberfläche zum editieren und veröffentlichen von Events und Blog-Posts auf deinen Websites"
+    />
     <title>hugo-s3-cms</title>
 
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <!-- Google Fonts -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic&display=swap" defer>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic&display=swap"
+      defer
+    />
     <!-- CSS Reset -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css"
+    />
     <!-- Milligram CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css"
+    />
     <!-- Own Stylesheet-->
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
     <main class="wrapper">
-        <!-- Navbar for displaying login/logout buttons and logo -->
-        <div class='navbar'>
-            <ul>
-                <li id="btn-logout" onclick="logout()">Logout</li>
-                <li id="btn-login" onclick="login()">Login</li>
-                <img id="navbar-logo" src="images/hugo_s3_logo_small.webp" alt="">
-                <p id="heading">hugo-s3-cms</p>
-            </ul>
+      <!-- Navbar for displaying login/logout buttons and logo -->
+      <div class="navbar">
+        <ul>
+          <li id="btn-logout" onclick="logout()">Logout</li>
+          <li id="btn-login" onclick="login()">Login</li>
+          <img id="navbar-logo" src="images/hugo_s3_logo_small.webp" alt="" />
+          <p id="heading">hugo-s3-cms</p>
+        </ul>
+      </div>
+
+      <!-- Site content -->
+      <div class="container">
+        <div id="login-text">
+          <img id="header-logo" src="images/hugo_s3_logo.webp" alt="" />
+          <p>
+            Willkommen auf der Startseite des Hugo-S3-CMS Systems. Melde dich
+            über den Login-Button in der Navigationsleiste an um fortzufahren!
+          </p>
         </div>
 
-        <!-- Site content -->
-        <div class="container">
-            <div id="login-text">
-                <img id="header-logo" src="images/hugo_s3_logo.webp" alt="">
-                <p>Willkommen auf der Startseite des Hugo-S3-CMS Systems. Melde dich über den Login-Button
-                    in der Navigationsleiste an um fortzufahren!</p>
+        <div id="spa">
+          <div class="desc-section">
+            <h2>Informationen:</h2>
+            <p class="description">
+              Willkommen im autorisierten Zustand des hugo-s3-cms. Mit diesem
+              System können Sie einen Post für ihre gehostete Webseite
+              erstellen. Ihr individuell erstellter User ermöglicht das
+              Verwalten von allen ihrer Posts. Nach dem Einloggen in die
+              Applikation ist ihre User für einen bestimmten Zeitraum auch nach
+              Schließen der Seite verfügbar. Über den Logout-Knopf können Sie
+              ihre Session beenden. Diese Oberfläche unterstützt das hochladen,
+              löschen und anzeigen der Posts. Weitere Informationen entnehmen
+              Sie bitte der beigelegten Produktdokumentation (Projektbericht).
+            </p>
+            <h2>Post schreiben:</h2>
+            <p class="description">
+              Mithilfe dieses Formular können sie einen Post in das Backend
+              hochladen. Dazu müssen alle Felder ausgefüllt sein. Über den
+              Submit-Button werden die Posts hochgeladen. Innerhalb des
+              Textfeldes kann mit
+              <a
+                target="_blank"
+                rel="noopener"
+                href="https://www.markdownguide.org/cheat-sheet/"
+                >Markdown</a
+              >
+              geschrieben werden.
+            </p>
+          </div>
+
+          <div class="func-section">
+            <div id="post-writing">
+              <!-- Formular for metadata upload-->
+              <div class="row" id="metadata">
+                <div class="column">
+                  <label for="ftitle">Titel:</label>
+                  <input type="text" id="ftitle" name="title" />
+                </div>
+                <div class="column">
+                  <label for="fdate">Datum:</label>
+                  <input type="date" id="fdate" name="date" />
+                </div>
+                <div class="column">
+                  <label for="fauthor">Autor:</label>
+                  <input type="text" id="fauthor" name="author" />
+                </div>
+              </div>
+
+              <!-- Form for markdown writing and preview-->
+              <div class="row" id="writing">
+                <div class="column">
+                  <label>Post-Text schreiben:</label>
+                  <textarea
+                    oninput="isTyping()"
+                    id="mdUserText"
+                    cols="40"
+                    rows="5"
+                  ></textarea>
+                  <button id="bsubmit" onclick="createPostFromUi()">
+                    Submit
+                  </button>
+                </div>
+                <div class="column">
+                  <label>Markdown-Preview</label>
+                  <div class="preview" id="createPreview"></div>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div id="spa">
-                <div class="desc-section">
-                    <h2>Informationen:</h2>
-                    <p class="description">
-                        Willkommen im autorisierten Zustand des hugo-s3-cms. Mit diesem System können Sie einen Post
-                        für ihre gehostete Webseite erstellen. Ihr individuell erstellter User ermöglicht das Verwalten
-                        von allen ihrer Posts. Nach dem Einloggen in die Applikation ist ihre User für einen bestimmten
-                        Zeitraum auch nach Schließen der Seite verfügbar. Über den Logout-Knopf können Sie ihre Session
-                        beenden. Diese Oberfläche unterstützt das hochladen, löschen und anzeigen der
-                        Posts. Weitere Informationen entnehmen Sie bitte der beigelegten Produktdokumentation
-                        (Projektbericht).
-                    </p>
-                    <h2>Post schreiben:</h2>
-                    <p class="description">
-                        Mithilfe dieses Formular können sie einen Post in das Backend hochladen. Dazu müssen alle Felder
-                        ausgefüllt sein. Über den Submit-Button werden die Posts hochgeladen. Innerhalb des Textfeldes
-                        kann mit <a target="_blank" rel="noopener"
-                            href="https://www.markdownguide.org/cheat-sheet/">Markdown</a> geschrieben werden.
-                    </p>
-                </div>
+          <div class="desc-section">
+            <h2>Posts anzeigen/löschen:</h2>
+            <p class="description">
+              Hier können Sie alle Post-Dateien anzeigen lassen, die in das CMS
+              hochgeladen wurden. Es werden die einzigartigen Dateinamen
+              (Object-Keys) der Posts angezeigt.
+            </p>
+          </div>
 
-                <div class="func-section">
-                    <div id="post-writing">
-                        <!-- Formular for metadata upload-->
-                        <div class="row" id="metadata">
-                            <div class="column">
-                                <label for="ftitle">Titel:</label>
-                                <input type="text" id="ftitle" name="title">
-                            </div>
-                            <div class="column">
-                                <label for="fdate">Datum:</label>
-                                <input type="date" id="fdate" name="date">
-                            </div>
-                            <div class="column">
-                                <label for="fauthor">Autor:</label>
-                                <input type="text" id="fauthor" name="author">
-                            </div>
-                        </div>
-
-                        <!-- Form for markdown writing and preview-->
-                        <div class="row" id="writing">
-                            <div class="column">
-                                <label>Post-Text schreiben:</label>
-                                <textarea oninput="isTyping()" id="mdUserText" cols="40" rows="5"></textarea>
-                                <button id="bsubmit" onclick="createPostFromUi()">Submit</button>
-                            </div>
-                            <div class="column">
-                                <label>Markdown-Preview</label>
-                                <div class="preview" id="createPreview"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="desc-section">
-                    <h2>Posts anzeigen/löschen:</h2>
-                    <p class="description">
-                        Hier können Sie alle Post-Dateien anzeigen lassen, die in das CMS hochgeladen wurden.
-                        Es werden die einzigartigen Dateinamen (Object-Keys) der Posts angezeigt.
-                    </p>
-                </div>
-
-                <div class="func-section">
-                    <div id="post-objects">
-                        <!-- JS generated objects to display which objects currently are stored-->
-                        <div id="objectList"></div>
-                        <!-- Pagination Implentation-->
-                        <p id="pagination-heading">Nächste/Vorherige Seite:</p>
-                        <div class="pagination row">
-                            <button id="btn-pageDown" disabled="true" onClick="pageDown()">❮</button>
-                            <p id="pageNumCounter">1</p>
-                            <button id="btn-pageUp" onClick="pageUp()">❯</button>
-                            <button class="button-outline" id="listObjects" onclick="pagedObjectPreview()">Refresh
-                                Objects</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Preview oft the getObjects()-->
-                <div class="row">
-                    <div class="preview" id="getPreview">
-                        Wählen Sie einen der oberen Posts über das Auge aus um eine Vorschau des hochgeladenen Posts zu
-                        erhalten!
-                    </div>
-                </div>
-
-                <div class="row footer">
-                    <p>Author: Leon Rauschenbach (2022)</p>
-                    <p><a href="mailto:hege@example.com">web@lrau.xyz</a></p>
-                </div>
-
+          <div class="func-section">
+            <div id="post-objects">
+              <!-- JS generated objects to display which objects currently are stored-->
+              <div id="objectList"></div>
+              <!-- Pagination Implentation-->
+              <p id="pagination-heading">Nächste/Vorherige Seite:</p>
+              <div class="pagination row">
+                <button id="btn-pageDown" disabled="true" onClick="pageDown()">
+                  ❮
+                </button>
+                <p id="pageNumCounter">1</p>
+                <button id="btn-pageUp" onClick="pageUp()">❯</button>
+                <button
+                  class="button-outline"
+                  id="listObjects"
+                  onclick="pagedObjectPreview()"
+                >
+                  Refresh Objects
+                </button>
+              </div>
             </div>
+          </div>
+          <!-- Preview oft the getObjects()-->
+          <div class="row">
+            <div class="preview" id="getPreview">
+              Wählen Sie einen der oberen Posts über das Auge aus um eine
+              Vorschau des hochgeladenen Posts zu erhalten!
+            </div>
+          </div>
+
+          <div class="row footer">
+            <p>Author: Leon Rauschenbach (2022)</p>
+            <p><a href="mailto:web@lrau.xyz">web@lrau.xyz</a></p>
+          </div>
         </div>
+      </div>
 
-        <!-- Markdown Preview and HTML Sanitizer-->
-        <script src="https://cdn.jsdelivr.net/npm/marked@4.0.12/marked.min.js"
-            integrity="sha256-tgAXzjV6GfkdWH2L7rks8tkOueaO8xV5hZSgKoAiO7o=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.6/dist/purify.min.js"
-            integrity="sha256-u729SS+rZJlPJbWgPeuX/57zEYMrpmb3EdiMug5IYNQ=" crossorigin="anonymous"></script>
-        <!-- Auth0 SDK-->
-        <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"
-            integrity="sha512-I3xjWOcpBPlEX9u3nRtqY2P6H8j7zqVUIXGs7B1vmNSSrkPeFGPoCwVh9NQ09tRC+FjNobpUJupBj5IBcCgQUw=="
-            crossorigin="anonymous"></script>
-        <!-- Alert Styling-->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.7/dist/sweetalert2.all.min.js"
-            integrity="sha256-eTz92F43Upy5TN7f6frMgWI4eQgs0XEL7zBu8A8k7tk=" crossorigin="anonymous"></script>
-        <!-- Application Logic -->
-        <script src="scripts/api.js"></script>
-        <script src="scripts/main.js"></script>
+      <!-- Markdown Preview and HTML Sanitizer-->
+      <script
+        src="https://cdn.jsdelivr.net/npm/marked@4.0.12/marked.min.js"
+        integrity="sha256-tgAXzjV6GfkdWH2L7rks8tkOueaO8xV5hZSgKoAiO7o="
+        crossorigin="anonymous"
+      ></script>
+      <script
+        src="https://cdn.jsdelivr.net/npm/dompurify@2.3.6/dist/purify.min.js"
+        integrity="sha256-u729SS+rZJlPJbWgPeuX/57zEYMrpmb3EdiMug5IYNQ="
+        crossorigin="anonymous"
+      ></script>
+      <!-- Auth0 SDK-->
+      <script
+        src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"
+        integrity="sha512-I3xjWOcpBPlEX9u3nRtqY2P6H8j7zqVUIXGs7B1vmNSSrkPeFGPoCwVh9NQ09tRC+FjNobpUJupBj5IBcCgQUw=="
+        crossorigin="anonymous"
+      ></script>
+      <!-- Alert Styling-->
+      <script
+        src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.7/dist/sweetalert2.all.min.js"
+        integrity="sha256-eTz92F43Upy5TN7f6frMgWI4eQgs0XEL7zBu8A8k7tk="
+        crossorigin="anonymous"
+      ></script>
+      <!-- Application Logic -->
+      <script src="scripts/api.js"></script>
+      <script src="scripts/main.js"></script>
     </main>
-</body>
-
+  </body>
 </html>

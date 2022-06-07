@@ -1,226 +1,224 @@
 /* Body Styling and document-wide stuff */
 body {
-    background: rgb(136, 102, 204);
-    background: linear-gradient(90deg, rgba(136, 102, 204, 1) 35%, rgba(102, 153, 204, 1) 100%);
+  background: rgb(136, 102, 204);
+  background: linear-gradient(
+    90deg,
+    rgba(136, 102, 204, 1) 35%,
+    rgba(102, 153, 204, 1) 100%
+  );
 }
 
 h1 {
-    text-align: center;
+  text-align: center;
 }
 
 h2 {
-    margin-bottom: 0em;
+  margin-bottom: 0em;
 }
 
 .container {
-    margin-top: 4em;
-    margin-bottom: 2em;
-    background-color: white;
-    padding: 4em 0em 0em 0em;
+  margin-top: 4em;
+  margin-bottom: 2em;
+  background-color: white;
+  padding: 4em 0em 0em 0em;
 }
 
 .func-section {
-    margin: 1em 0em;
-    padding: 1em 3.2em 1em 3.2em;
-    background-color: #fafafa;
-    border: solid 0.1em #e0e0e0;
+  margin: 1em 0em;
+  padding: 1em 3.2em 1em 3.2em;
+  background-color: #fafafa;
+  border: solid 0.1em #e0e0e0;
 }
 
 .desc-section {
-    margin: 0em 3em;
+  margin: 0em 3em;
 }
 
 #spa {
-    display: none;
+  display: none;
 }
 
 /* Header and navbar */
 .navbar {
-    background-color: #fafafa;
-    border-bottom: 1px lightslategrey solid;
+  background-color: #fafafa;
+  border-bottom: 1px lightslategrey solid;
 }
 
 .navbar ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .navbar li {
-    float: right;
-    margin-bottom: 0;
-    display: block;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 1em;
-    font-weight: bold;
+  float: right;
+  margin-bottom: 0;
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 1em;
+  font-weight: bold;
 }
 
 .navbar li:hover {
-    background-color: #9b4dca;
-    color: white;
-
+  background-color: #9b4dca;
+  color: white;
 }
 
 #btn-logout {
-    display: none;
+  display: none;
 }
 
 #heading {
-    float: left;
-    display: block;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    margin-bottom: 0;
+  float: left;
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  margin-bottom: 0;
 }
 
 #navbar-logo {
-    float: left;
-    display: block;
-    padding-top: 0.5em;
-    margin-left: 0.5em;
-    width: 2.4em;
-    height: auto;
+  float: left;
+  display: block;
+  padding-top: 0.5em;
+  margin-left: 0.5em;
+  width: 2.4em;
+  height: auto;
 }
 
 #header-logo {
-    width: 40%;
+  width: 40%;
 }
 
 #login-text {
-    padding: 3em 0em;
-    text-align: center;
-    font-size: 2em;
-    display: block;
+  padding: 3em 0em;
+  text-align: center;
+  font-size: 2em;
+  display: block;
 }
 
 .description {
-    text-align: left;
-    padding: 1em 0em 0.5em 0em;
+  text-align: left;
+  padding: 1em 0em 0.5em 0em;
 }
 
 /* Metadata formular */
 #metadata input {
-    max-width: 12em;
+  max-width: 12em;
 }
-
 
 /* Text Formular */
 
 #ftext {
-    border: 0.1em lightslategrey solid;
+  border: 0.1em lightslategrey solid;
 }
 
 #mdUserText {
-    height: 20em;
-    resize: none;
-    border: 0.1em lightslategrey solid;
-    /* Limits for scaling of text boxes  */
+  height: 20em;
+  resize: none;
+  border: 0.1em lightslategrey solid;
+  /* Limits for scaling of text boxes  */
 }
 
 #mdUserText:hover {
-    border: 0.2rem solid #9b4dca;
+  border: 0.2rem solid #9b4dca;
 }
 
 .preview {
-    border: 0.1em lightslategrey solid;
-    padding: 0.8em;
-    /* Limits for scaling of text boxes  */
-    height: 20em;
-    overflow-y: scroll;
-    overflow-wrap: break-word;
+  border: 0.1em lightslategrey solid;
+  padding: 0.8em;
+  /* Limits for scaling of text boxes  */
+  height: 20em;
+  overflow-y: scroll;
+  overflow-wrap: break-word;
 }
 
 .preview:hover {
-    border: 0.2rem solid #9b4dca;
+  border: 0.2rem solid #9b4dca;
 }
 
 #createPreview {
-    width: 22.5em;
-    -webkit-hyphens: auto;
-    -ms-hyphens: auto;
-    hyphens: auto;
+  width: 22.5em;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 
 #getPreview {
-    border: solid black 1px;
-    width: 80%;
-    margin: 1em auto 0 auto;
+  border: solid black 1px;
+  width: 80%;
+  margin: 1em auto 0 auto;
 }
-
-
 
 /* List Posts Objects */
 #post-objects {
-    padding: 1em;
-    /* background-color: #fafafa; */
-    /* fafafa */
+  padding: 1em;
+  /* background-color: #fafafa; */
+  /* fafafa */
 }
 
-
 .singleObject {
-    text-align: left;
-    max-width: 30em;
+  text-align: left;
+  max-width: 30em;
 }
 
 .objectTitle {
-    min-width: 19em;
+  min-width: 19em;
 }
 
 .icon {
-    border: 0.1rem solid #9b4dca;
-    width: 2em;
-    padding: 0.5rem;
+  border: 0.1rem solid #9b4dca;
+  width: 2em;
+  padding: 0.5rem;
 }
 
 .icon:hover {
-    background-color: #9b4dca;
-    transition: 0.3s;
+  background-color: #9b4dca;
+  transition: 0.3s;
 }
 
 /* Pagination  */
 #pagination-heading {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 #pageNumCounter {
-    padding-top: 0.5em;
-    max-width: 7em;
+  padding-top: 0.5em;
+  max-width: 7em;
 }
 
 .pagination button {
-    margin: 0 1em;
+  margin: 0 1em;
 }
 
 /* Footer */
 
 .footer {
-    font-style: italic;
-    padding: 2em 0em;
-    margin: 0em auto;
-    max-width: 30em;
+  font-style: italic;
+  padding: 2em 0em;
+  margin: 0em auto;
+  max-width: 30em;
 }
 
 .footer p {
-    color: lightgray;
-    margin: 0em 2em;
-    transition: 0.3s;
-
+  color: lightgray;
+  margin: 0em 2em;
+  transition: 0.3s;
 }
 
 .footer a {
-    color: lightgray;
-    transition: 0.3s;
+  color: lightgray;
+  transition: 0.3s;
 }
 
 .footer a:hover {
-    color: #9b4dca;
+  color: #9b4dca;
 }
 
 .footer p:hover {
-    color: #9b4dca;
+  color: #9b4dca;
 }
