@@ -81,7 +81,6 @@ function preview() {
 
   marked.use({
     breaks: true,
-    sanitize: true,
   });
 
   // Preview in box
@@ -152,7 +151,7 @@ function createPostFromUi() {
 
 function createPost(postObject) {
   // Creates a post in the backend via the api
-  postData(apiUrl + "upload", postObject)
+  postData(postObject)
     .then((response) => {
       if (response.status == 200) {
         response.json().then((_data) => {
@@ -161,6 +160,7 @@ function createPost(postObject) {
             text: "Der Post wurde erfolgreich in das Backend hochgeladen",
             icon: "success",
           });
+          clearPostFields();
         });
       } else if (response.status == 400) {
         response.json().then((data) => {

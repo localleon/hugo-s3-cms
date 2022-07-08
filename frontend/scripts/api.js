@@ -30,10 +30,11 @@ const logout = () => {
 
 // hugo-backend Functions
 async function getObject(key) {
+    // /get Objects from our endpoint and return as json
     let url = apiUrl + "get/" + key;
 
     const response = await fetch(url, {
-        method: "GET", // *GET, POST, PUT, DELETE
+        method: "GET", 
         mode: "cors",
         cache: "no-cache",
         credentials: "omit",
@@ -48,6 +49,8 @@ async function getObject(key) {
 }
 
 async function getObjects(pageNum) {
+    // wraps the pagination functino into a workable function 
+
     let url =
         apiUrl +
         "list?" +
@@ -56,7 +59,7 @@ async function getObjects(pageNum) {
         });
 
     const response = await fetch(url, {
-        method: "GET", // *GET, POST, PUT, DELETE
+        method: "GET",
         mode: "cors",
         cache: "no-cache",
         credentials: "omit",
@@ -74,7 +77,7 @@ async function deletePost(key) {
     let url = apiUrl + "delete/" + key;
 
     const response = await fetch(url, {
-        method: "DELETE", // *GET, POST, PUT, DELETE
+        method: "DELETE", 
         mode: "cors",
         cache: "no-cache",
         credentials: "omit",
@@ -88,10 +91,11 @@ async function deletePost(key) {
     return response.json();
 }
 
-async function postData(url = "", data = {}) {
-    // The response of the
+async function postData(data = {}) {
+    let url = apiUrl + "upload"
+    // TAkes 
     return fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE
+        method: "POST", 
         mode: "cors",
         cache: "no-cache",
         credentials: "omit",
