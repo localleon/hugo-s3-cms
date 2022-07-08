@@ -113,7 +113,7 @@ def handler_upload_post(event):
         return callback(
             400,
             {
-                "msg": "Malformed Request. Not all required json-keys where provided or some fields where left empty"
+                "msg": "Malformed Request. Not all required json-keys where provided or other fields where left empty"
             },
         )
 
@@ -266,7 +266,7 @@ def validate_post_json(params):
         param_lens = [len(x) > 1 for x in params.values()]
 
         return all(provided_keys) and all(param_lens)
-    except TypeError:
+    except Exception as e:
         # We didn't get an iterable body aka json
         return False
 
