@@ -9,6 +9,7 @@ import bleach
 
 
 def main_handler(event, context):
+    """main_handler handles the internal routing and function calls of the backend based on AWS Events"""
     print("Lambda function ARN:", context.invoked_function_arn)
     print(event)
 
@@ -197,6 +198,7 @@ def calc_paging_index(page_num):
 
 
 def get_body_from_event(event):
+    """Extracts HTTP-Body from AWS Event with error handling"""
     try:
         # check if we have an actuall body and return safely
         if "body" in event.keys():
@@ -226,6 +228,7 @@ def get_filename_from_post(title):
 
 
 def write_to_s3(file, filename, path=None):
+    """Checks for path existence and performes a file operation"""
     print(f"Writing to {bucket_name} with {filename} in {path}")
     # construct the s3_key based on if the file should be stored in a folder
     s3_path = path + "/" + filename if path != None else filename

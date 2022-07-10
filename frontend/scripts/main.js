@@ -108,11 +108,11 @@ function b64DecodeUnicode(str) {
   // b54 decoding  from bytestream, to percent-encoding, to original string. We can't use atob() if we want to preserve the utf-8 functionality
   return decodeURIComponent(
     atob(str)
-      .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
-      .join("")
+    .split("")
+    .map(function (c) {
+      return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+    })
+    .join("")
   );
 }
 
@@ -140,7 +140,7 @@ function createPostFromUi() {
   // Abort Condition if some post fields are not filled
   if (!post) {
     Swal.fire({
-      title: "Felder fehlen! ",
+      title: "Felder fehlen!",
       text: "Nicht alle Felder wurden ausgefüllt! Bitte fülle alle Felder aus.",
       icon: "error",
     });
@@ -154,35 +154,41 @@ function createPost(postObject) {
   postData(postObject)
     .then((response) => {
       if (response.status == 200) {
-        response.json().then((_data) => {
-          Swal.fire({
-            title: "Post erstellt.",
-            text: "Der Post wurde erfolgreich in das Backend hochgeladen",
-            icon: "success",
-          });
-          clearPostFields();
-        });
+        createPostSuccessPopup()
       } else if (response.status == 400) {
-        response.json().then((data) => {
-          Swal.fire({
-            title: "Fehlermeldung",
-            text: data["msg"],
-            icon: "question",
-          });
-        });
-
-        // Refresh view
-        clearPostFields();
-        setTimeout(pagedObjectPreview, refreshDelay);
+        createPostErrorPopup(data["msg"])
       }
     })
     .catch((error) => {
       Swal.fire({
         title: "Etwas ist schiefgelaufen :-(",
-        text: "Ein Error ist mit der Netzwerkverbindung aufgetreten." + error,
+        text: "Ein Error ist mit der API aufgetreten. " + errroMsg,
         icon: "error",
       });
     });
+}
+
+function createPostSuccessPopup() {
+  Swal.fire({
+    title: "Post erstellt.",
+    text: "Der Post wurde erfolgreich in das Backend hochgeladen",
+    icon: "success",
+  });
+  clearPostFields();
+}
+
+function createPostErrorPopup(errorMsg) {
+  response.json().then((data) => {
+    Swal.fire({
+      title: "Fehlermeldung",
+      text: errorMsg,
+      icon: "question",
+    });
+  });
+
+  // Refresh view
+  clearPostFields();
+  setTimeout(pagedObjectPreview, refreshDelay);
 }
 
 function clearPostFields() {
