@@ -146,8 +146,6 @@ function createPostFromUi() {
     });
   }
 
-  console.log(post.title);
-  console.log(containsSpecialCharacters(post.title));
   // Check if the title contains illegal characters
   if (!containsSpecialCharacters(post.title)) {
     createPost(post);
