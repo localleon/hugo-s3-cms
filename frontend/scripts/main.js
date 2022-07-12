@@ -108,11 +108,11 @@ function b64DecodeUnicode(str) {
   // b54 decoding  from bytestream, to percent-encoding, to original string. We can't use atob() if we want to preserve the utf-8 functionality
   return decodeURIComponent(
     atob(str)
-    .split("")
-    .map(function (c) {
-      return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-    })
-    .join("")
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
   );
 }
 
@@ -144,9 +144,25 @@ function createPostFromUi() {
       text: "Nicht alle Felder wurden ausgefüllt! Bitte fülle alle Felder aus.",
       icon: "error",
     });
-    return;
   }
-  createPost(post);
+
+  console.log(post.title);
+  console.log(containsSpecialCharacters(post.title));
+  // Check if the title contains illegal characters
+  if (!containsSpecialCharacters(post.title)) {
+    createPost(post);
+  } else {
+    Swal.fire({
+      title: "Titel nicht gültig!",
+      text: "Im Titel sind nur Buchstaben, Leerzeichen und Zahlen erlaubt. Bitte passe deinen Titel entsprechend an.",
+      icon: "warning",
+    });
+  }
+}
+
+function containsSpecialCharacters(str) {
+  var regex = /[äöü!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g;
+  return regex.test(str);
 }
 
 function createPost(postObject) {
@@ -154,15 +170,17 @@ function createPost(postObject) {
   postData(postObject)
     .then((response) => {
       if (response.status == 200) {
-        createPostSuccessPopup()
+        createPostSuccessPopup();
       } else if (response.status == 400) {
-        createPostErrorPopup(data["msg"])
+        response.json().then((data) => {
+          createPostErrorPopup(data["msg"]);
+        });
       }
     })
     .catch((error) => {
       Swal.fire({
         title: "Etwas ist schiefgelaufen :-(",
-        text: "Ein Error ist mit der API aufgetreten. " + errroMsg,
+        text: "Ein Error ist mit der API aufgetreten. " + error,
         icon: "error",
       });
     });
@@ -178,12 +196,10 @@ function createPostSuccessPopup() {
 }
 
 function createPostErrorPopup(errorMsg) {
-  response.json().then((data) => {
-    Swal.fire({
-      title: "Fehlermeldung",
-      text: errorMsg,
-      icon: "question",
-    });
+  Swal.fire({
+    title: "Fehlermeldung",
+    text: errorMsg,
+    icon: "question",
   });
 
   // Refresh view
